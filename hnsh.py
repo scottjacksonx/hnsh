@@ -32,10 +32,21 @@ class HTMLParser:
 		"""
 		Gets the HTML source code from Hacker News.
 		"""
-		f = urllib2.urlopen(url)
-		source = f.read()
-		f.close()
-		return source
+		try:
+			f = urllib2.urlopen(url)
+			source = f.read()
+			f.close()
+			return source
+		except URLError:
+			proxyAddress = raw_input("Uh oh. Something went wrong, and it could be because you're using a proxy. If you're using a proxy, enter its IP Address:")
+			proxies = { 'http': proxyAddress }
+			proxy_support = urllib2.ProxyHandler(proxies)
+			opener = urllib2.build_opener(proxy_support)
+			urllib2.install_opener(opener)
+			f = urllib2.urlopen(url)
+			source = f.read()
+			f.close()
+			return source
 		
 	def getStoryNumber(self, source):
 		"""
