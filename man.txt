@@ -1,0 +1,170 @@
+ _                  _     
+| |                | |    
+| |__   _ __   ___ | |__  
+| '_ \ | '_ \ / __|| '_ \ 
+| | | || | | |\__ \| | | |
+|_| |_||_| |_||___/|_| |_|
+
+hacker news shell manual.
+
+======== CONTENTS ========
+1. Introduction
+2. Commands
+3. Preferences
+==========================
+
+
+1. Introduction
+Hacker News Shell (hnsh) lets you interact with the front page of Hacker News right from the shell. You can browse stories, open up stories in your browser, and open up HN comments (opening up comments also gives you a quick way to upmod stories).
+
+hnsh is written in Python, so it is cross-platform. It was built (and mainly used) on a Macintosh, but I have also tested it on a Windows box and an Ubuntu machine.
+
+
+2. Commands
+When you start hnsh, you see the top 5 stories currently on Hacker News and a prompt for you to enter a command. What follows is a listing of commands you can enter, their meanings, and examples of how to use them where appropriate.
+
+j/k -- show lower-ranked / higher-ranked stories.
+	"j" moves you down the list of stories, "k" moves you up the list of stories.
+	
+t -- go to the top of the list.
+	"t" moves you to the top of the list.
+	
+r -- get the latest stories from Hacker News.
+	"r" goes and gets the stories that are currently on the front page of Hacker News.
+	
+q -- quit.
+	"q" quits the program.
+	
+h -- help.
+	"h" shows help.
+	
+# -- open story number # in your web browser.
+	"#" opens a story for you to read. Example:
+	Typing "3" (no quotes) at the prompt opens up story number 3.
+	
+c# -- open comments for story number # in your web browser.
+	"c#" opens Hacker News comments for story #. Example:
+	Typing "c3" (no quotes) opens up the comments for story number 3.
+
+#+ -- open up story number # AND its comments in your web browser.
+	"#+" opens story # and its Hacker News comments. Example:
+	Typing "1+" (no quotes) opens up story number 1 and its Hacker News comments.
+	
+d/w -- always show domains / webpages of stories.
+	"d" tells the program to always show domains for stories, and w tells the program to always show the full URL of the page the story is on. By default, hnsh shows domains for stories. Example:
+	
+	By default, a screen may look like this:
+	
+<demo>
+
+1  > No one gets fired for hiring IBM - How our pitch was stolen from us...
+     (solidstategroup.com) 
+     11 points / submitted by: dabeeeenster / 0 comments
+
+2  > Three lessons I learnt from porting Diablo
+     (petewarden.typepad.com) 
+     43 points / submitted by: petewarden / 10 comments
+
+3  > Ridiculous User Interfaces In Film, and the Man Who Designs Them
+     (gizmodo.com) 
+     16 points / submitted by: nreece / 5 comments
+
+4  > Analyzing Y Combinator
+     (awesomezombie.com) 
+     109 points / submitted by: ig1 / 38 comments
+
+5  > GamePro burns developers on $5000 programming contest
+     (jhherren.wordpress.com) 
+     10 points / submitted by: tengkahwee / 1 comment
+
+</demo>
+
+	After entering the command "w" (no quotes), that screen would like this:
+	
+<demo>
+
+1  > No one gets fired for hiring IBM - How our pitch was stolen from us...
+     http://www.solidstategroup.com/what-we-think/no-one-gets-fired-for-hiring-ibm
+     11 points / submitted by: dabeeeenster / 0 comments
+
+2  > Three lessons I learnt from porting Diablo
+     http://petewarden.typepad.com/searchbrowser/2009/12/three-lessons-i-learnt-from-porting-diablo.html
+     43 points / submitted by: petewarden / 10 comments
+
+3  > Ridiculous User Interfaces In Film, and the Man Who Designs Them
+     http://gizmodo.com/5418342/ridiculous-user-interfaces-in-film-and-the-man-who-designs-them
+     16 points / submitted by: nreece / 5 comments
+
+4  > Analyzing Y Combinator
+     http://blog.awesomezombie.com/2009/12/analyzing-y-combinator.html
+     109 points / submitted by: ig1 / 38 comments
+
+5  > GamePro burns developers on $5000 programming contest
+     http://jhherren.wordpress.com/2009/12/03/gamepro-burns-developers-on-5000-programming-contest/
+     10 points / submitted by: tengkahwee / 1 comment
+
+</demo>
+	
+	Entering "d" (no quotes) would make tell hnsh to go back to just show domains for stories, like it did at the beginning.
+
+l/o -- always show full titles of stories / make titles fit an 80-char line.
+	hnsh was built with an 80-character-wide and 24-character-high terminal window in mind. Because of this, by default, if the title of a story won't fit onto one line of an 80-character-wide terminal window, the title is shortened and an ellipsis is placed at the end. If you use a terminal window wider than 80 characters, or just always want to see the full titles of stories, use the "l" command. To switch back to forcing long title to fit on one line, use the "o" command.
+	
+c/e -- collapse stories once you've read them / don't.
+	hnsh remembers which stories you've read (but only the ones you've opened using hnsh), so by using the "c" command, you can collapse the stories you've already read down to one line. Example:
+	 
+	By default, a screen may look like this:
+	
+<demo>	
+
+1  > Google acquires AppJet/Etherpad
+     (etherpad.com) 
+     193 points / submitted by: dreeves / 78 comments
+
+2  > CrunchPad Litigation Imminent
+     (techcrunch.com) 
+     15 points / submitted by: vrobancho / 4 comments
+
+3  > Eureqa 
+     (cornell.edu) 
+     32 points / submitted by: kqr2 / 5 comments
+
+4  > Why I gave away my company to charity
+     (sivers.org) 
+     210 points / submitted by: sivers / 66 comments
+
+5  > NYT: Apple has acquired streaming music service Lala
+     (nytimes.com) 
+     10 points / submitted by: chris24 / 1 comment
+
+</demo>
+	
+	After reading stories 1 and 5 (with commands "1" and "5", respectively), that screen would look like this:
+	
+<demo>
+
+1  > [already read]
+
+2  > CrunchPad Litigation Imminent
+     (techcrunch.com) 
+     15 points / submitted by: vrobancho / 4 comments
+
+3  > Eureqa 
+     (cornell.edu) 
+     32 points / submitted by: kqr2 / 5 comments
+
+4  > Why I gave away my company to charity
+     (sivers.org) 
+     210 points / submitted by: sivers / 66 comments
+
+5  > [already read]
+
+</demo>
+	
+	To switch back to showing full details for stories again, use the "e" command.
+	
+u -- update hnsh to the latest version.
+	The "u" command downloads the latest version of hnsh from http://scottjackson.org.
+
+3. Preferences
+User preferences (the d/w, l/o and c/e commands) are stored in a file called hnsh_prefs.txt in the same directory as hnsh.py. The file consists of one line of text, and every character represents a preference. If hnsh_prefs.txt does not exist or cannot be opened for writing, then any preferences changed will only stay in effect until the program is closed.
