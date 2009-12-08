@@ -541,7 +541,7 @@ class HackerNewsShell:
 		This is a temporary meausre until I can find a better way to update the program.
 		"""
 		input = raw_input("To update hnsh, go to http://github.com/scottjacksonx/hnsh and download the latest version. Press Return to continue:")
-			self.printStories()
+		self.printStories()
 			
 			
 			
