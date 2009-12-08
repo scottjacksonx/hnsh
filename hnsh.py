@@ -36,20 +36,21 @@ class HTMLParser:
 		"""
 		Gets the HTML source code from Hacker News.
 		"""
-		f = urllib2.urlopen(url)
-		source = f.read()
-		f.close()
-		return source
-	except URLError:
-		proxyAddress = raw_input("Uh oh. Something went wrong, and it could be because you're using a proxy. If you're using a proxy, enter its IP Address:")
-		proxies = { 'http': proxyAddress }
-		proxy_support = urllib2.ProxyHandler(proxies)
-		opener = urllib2.build_opener(proxy_support)
-		urllib2.install_opener(opener)
-		f = urllib2.urlopen(url)
-		source = f.read()
-		f.close()
-		return source
+		try:
+			f = urllib2.urlopen(url)
+			source = f.read()
+			f.close()
+			return source
+		except URLError:
+			proxyAddress = raw_input("Uh oh. Something went wrong, and it could be because you're using a proxy. If you're using a proxy, enter its IP Address:")
+			proxies = { 'http': proxyAddress }
+			proxy_support = urllib2.ProxyHandler(proxies)
+			opener = urllib2.build_opener(proxy_support)
+			urllib2.install_opener(opener)
+			f = urllib2.urlopen(url)
+			source = f.read()
+			f.close()
+			return source
 		
 	def getStoryNumber(self, source):
 		"""
@@ -549,7 +550,7 @@ class HackerNewsShell:
 			input = raw_input("> ")
 		
 		if input == "y" or input == "yes":
-			print "> Downloading the latest version (from ~Wanielis repository)..."
+			print "> Downloading the latest version (from GitHub repository)..."
 			serverFile = urllib.urlretrieve("http://github.com/tomwans/hnsh/zipball/master", "hnsh_latest.zip", quickProgressBar)
 			slash = "/"
 			if sys.platform == "win32":
@@ -564,9 +565,8 @@ class HackerNewsShell:
 					print "\n> Attempting to apply update ..."
 					updateZip = zipfile.ZipFile(sys.path[0] + slash + "hnsh_latest.zip", "r")
 					for name in updateZip.namelist():
-						if (updateZip.getinfo(name).filename.startswith(".") is False):
-							updateZip.extract(name, sys.path[0] + slash)
-							print " ", name, updateZip.getinfo(name).file_size, "bytes"
+						updateZip.extract(name, sys.path[0] + slash)
+						print " ", name, updateZip.getinfo(name).file_size, "bytes"
 				else:
 					print "\n> Download finished! Press enter to exit so you can manually update the files."
 			else:
