@@ -11,8 +11,6 @@ hnsh lets you browse and read Hacker News[1] from the shell.
 
 [1] http://news.ycombinator.com
 
-THIS IS JUST A STUDENT EXPERIMENT, DON'T MIND ME!
-
 Author: Scott Jackson
 Website: http://scottjackson.org/
 Contributor: Tom Wanielista (http://www.dsm.fordham.edu/~wanielis/)
@@ -551,7 +549,7 @@ class HackerNewsShell:
 		
 		if input == "y" or input == "yes":
 			print "\n  Downloading the latest version (from GitHub repository)..."
-			serverFile = urllib.urlretrieve("http://github.com/scottjacksonx/hnsh/zipball/master", "hnsh_latest.zip", quickProgressBar)
+			serverFile = urllib.urlretrieve("http://github.com/tomwans/hnsh/zipball/master", "hnsh_latest.zip", quickProgressBar)
 			slash = "/"
 			if sys.platform == "win32":
 				slash = "\\"
