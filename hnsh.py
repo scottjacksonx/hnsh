@@ -5,7 +5,7 @@
 | '_ \ | '_ \ / __|| '_ \ 
 | | | || | | |\__ \| | | |
 |_| |_||_| |_||___/|_| |_|
-hacker news shell - version 1.1.0
+hacker news shell - version 1.1.1
 
 hnsh lets you browse and read Hacker News[1] from the shell.
 
@@ -25,6 +25,7 @@ import webbrowser
 import sys
 from BeautifulSoup import BeautifulSoup
 import os, shutil
+import time
 
 
 class HTMLParser:
@@ -300,6 +301,7 @@ class HackerNewsShell:
 	oneToThirty = []	# List: "1", "2", ..., "30".
 	oneToThirtyComments = [] # List: "c1", "c2", ..., "c30".
 	oneToThirtyPlusComments = [] # List: "1+", "2+", ..., "30+"
+	lastRefreshed = time.localtime()
 	
 	# User Preferences #
 	userPrefsFileName = "hnsh_prefs.txt"
@@ -307,8 +309,17 @@ class HackerNewsShell:
 	showFullTitles = 0
 	collapseOldStories = 0
 	alreadyReadList = []
-	newestOrTop = "top"
+	newestOrTop = "top"	# Whether or not to show the newest or the top stories.
 
+	
+	def getLastRefreshedTime(self):
+		"""
+		Returns the last-refreshed time in a human-readable format.
+		"""
+		months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+		month = months[self.lastRefreshed.tm_mon - 1][:3]
+		time = str(self.lastRefreshed.tm_hour) + ":" + str(self.lastRefreshed.tm_min) + ", " + month + " " + str(self.lastRefreshed.tm_mday)
+		return time
 	
 	def printStories(self):
 		"""
@@ -316,7 +327,7 @@ class HackerNewsShell:
 		"""
 		for i in range(0,60):
 			print ""
-		print "Showing the " + self.newestOrTop + " stories on Hacker News. [Press 'h' for help.]"
+		print "Showing the " + self.newestOrTop + " stories. [last updated " + self.getLastRefreshedTime() + "] [" + "'h' for help.]"
 		print ""
 		for i in range(self.firstStoryToShow, self.lastStoryToShow):
 			self.stories[i].output(self.showDomains, self.showFullTitles, self.collapseOldStories)
@@ -382,6 +393,7 @@ class HackerNewsShell:
 		elif userInput == "r":
 			print "Getting latest stories from Hacker News..."
 			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
+			self.lastRefreshed = time.localtime()
 			self.printStories()
 			
 		elif userInput == "t":
@@ -433,13 +445,18 @@ class HackerNewsShell:
 		else:
 			input = raw_input("Invalid command. For help, press h and then Return at the prompt. Press Return to continue.")
 			self.printStories()
+			
+	def refreshStories(self):
+		"""
+		Gets the latest stories from HN and updates the lastRefreshed time.
+		"""
 
 	def showNewestStories(self):
 		"""
 		Sets the stories to show to be the newest stories submitted to HN.
 		"""
 		if self.newestOrTop == "top":
-			self.newestOrTop = "new"
+			self.newestOrTop = "newest"
 			print "Getting the newest stories submitted to Hacker News..."
 			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
 		else:
@@ -450,7 +467,7 @@ class HackerNewsShell:
 		"""
 		Sets the stories to show to be the top stories currently on HN.
 		"""
-		if self.newestOrTop == "new":
+		if self.newestOrTop == "newest":
 			self.newestOrTop = "top"
 			print "Getting top stories from Hacker News..."
 			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
@@ -551,24 +568,23 @@ class HackerNewsShell:
 		print "| '_ \ | '_ \ / __|| '_ \ "
 		print "| | | || | | |\__ \| | | |"
 		print "|_| |_||_| |_||___/|_| |_|"
+		print "A program by Scott Jackson"
+		print ""
 		print "To enter a command, type the key and press Return."
 		print "NB: parentheses indicate which of two options is the default."
 		print ""
+		print "Basic Commands:"
 		print "j/k -- show lower-ranked / higher-ranked stories."
-		print "t -- go to the top of the list."
-		#print "s -- clear screen and show current stories."
 		print "r -- get the latest stories from Hacker News."
 		print "q -- quit."
-		print "h -- help."
 		print "# -- open story number # in your web browser."
 		print "c# -- open comments for story number # in your web browser."
 		print "#+ -- open up story number # AND its comments in your web browser."
-		print "d/w -- always show domains / webpages of stories. (d)"
-		print "l/o -- always show full titles of stories / make titles fit an 80-char line. (o)"
-		print "c/e -- collapse stories once you've read them / don't. (e)"
-		print "top/new -- switch between showing the top and newest stories on HN (top)"
+		print "top/new -- switch between showing the top and newest stories on HN. (top)"
+		print "c/e -- collapse stories you've already read / don't collapse them. (e)"
 		print "u -- update hnsh to the latest version."
 		print "=========================="
+		print "For more commands, see the man.txt file."
 		input = raw_input("Press Return to go back to the Hacker News stories.")
 		self.printStories()
 
