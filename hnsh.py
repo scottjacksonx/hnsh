@@ -541,14 +541,6 @@ class HackerNewsShell:
 
 	def checkForUpdates(self):
 		"""
-<<<<<<< HEAD
-		Tells the user where they can get the latest version of hnsh.
-		
-		This is a temporary meausre until I can find a better way to update the program.
-		"""
-		input = raw_input("To update hnsh, go to http://github.com/scottjacksonx/hnsh and download the latest version. Press Return to continue:")
-		self.printStories()
-=======
 		Downloads the latest version of the program.
 		"""
 		# Get a definite yes or no answer from the user.
@@ -559,7 +551,7 @@ class HackerNewsShell:
 		
 		if input == "y" or input == "yes":
 			print "\n  Downloading the latest version (from GitHub repository)..."
-			serverFile = urllib.urlretrieve("http://github.com/tomwans/hnsh/zipball/master", "hnsh_latest.zip", quickProgressBar)
+			serverFile = urllib.urlretrieve("http://github.com/scottjacksonx/hnsh/zipball/master", "hnsh_latest.zip", quickProgressBar)
 			slash = "/"
 			if sys.platform == "win32":
 				slash = "\\"
@@ -587,7 +579,6 @@ class HackerNewsShell:
 		else:
 			input = raw_input("Press Return to go back to stories.")
 			self.printStories()
->>>>>>> tomwans/master
 			
 def quickProgressBar(blocksSoFar, blockSizeInBytes, totalFileSize):
 	bytesLeft = totalFileSize - (blocksSoFar * blockSizeInBytes)
