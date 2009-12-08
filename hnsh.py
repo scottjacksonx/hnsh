@@ -24,7 +24,7 @@ import urllib
 import webbrowser
 import sys
 from BeautifulSoup import BeautifulSoup
-import os
+import os, shutil
 
 
 class HTMLParser:
@@ -546,18 +546,18 @@ class HackerNewsShell:
 		# Get a definite yes or no answer from the user.
 		input = ""
 		while  input != "y" and input != "yes" and input != "n" and input != "no":
-			print("Download the latest version of hnsh? (y/n)")
+			print("  Download the latest version of hnsh? (y/n)")
 			input = raw_input("> ")
 		
 		if input == "y" or input == "yes":
-			print "> Downloading the latest version (from GitHub repository)..."
+			print "  Downloading the latest version (from GitHub repository)..."
 			serverFile = urllib.urlretrieve("http://github.com/tomwans/hnsh/zipball/master", "hnsh_latest.zip", quickProgressBar)
 			slash = "/"
 			if sys.platform == "win32":
 				slash = "\\"
 			if os.path.isfile("hnsh_latest.zip"):
 				print ""
-				print "> The latest version of hnsh has been downloaded as:"
+				print "  The latest version of hnsh has been downloaded as:"
 				print "  " + sys.path[0] + slash + "hnsh_latest.zip."
 				print ""
 				print "  Would you like to apply the update? (y/n)"
@@ -565,8 +565,11 @@ class HackerNewsShell:
 					print "\n> Attempting to apply update ..."
 					updateZip = zipfile.ZipFile(sys.path[0] + slash + "hnsh_latest.zip", "r")
 					for name in updateZip.namelist():
-						updateZip.extract(name, sys.path[0] + slash)
-						print " ", name, updateZip.getinfo(name).file_size, "bytes"
+						if (updateZip.getinfo(name).file_size > 0):
+							updateZip.extract(name)
+							shutil.copy(sys.path[0] + slash + name, sys.path[0] + slash + (name.rpartition("/")[2]))
+							#print sys.path[0] + slash + name.rpartition("/")[2]
+							print " ", name, updateZip.getinfo(name).file_size, "bytes"
 				else:
 					print "\n> Download finished! Press enter to exit so you can manually update the files."
 			else:
