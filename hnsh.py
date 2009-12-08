@@ -550,7 +550,7 @@ class HackerNewsShell:
 			input = raw_input("> ")
 		
 		if input == "y" or input == "yes":
-			print "  Downloading the latest version (from GitHub repository)..."
+			print "\n  Downloading the latest version (from GitHub repository)..."
 			serverFile = urllib.urlretrieve("http://github.com/tomwans/hnsh/zipball/master", "hnsh_latest.zip", quickProgressBar)
 			slash = "/"
 			if sys.platform == "win32":
