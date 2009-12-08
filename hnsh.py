@@ -11,16 +11,20 @@ hnsh lets you browse and read Hacker News[1] from the shell.
 
 [1] http://news.ycombinator.com
 
+THIS IS JUST A STUDENT EXPERIMENT, DON'T MIND ME!
+
 Author: Scott Jackson
 Website: http://scottjackson.org/
+Contributor: Tom Wanielista (http://www.dsm.fordham.edu/~wanielis/)
 """
-
+import zipfile
+import json
 import urllib2
 import urllib
 import webbrowser
 import sys
 from BeautifulSoup import BeautifulSoup
-import os
+import os, shutil
 
 
 class HTMLParser:
@@ -336,7 +340,7 @@ class HackerNewsShell:
 		Main loop. Gets user input and takes actions based on it.
 		"""
 		while (self.quit == 0):
-			userInput = raw_input(">")
+			userInput = raw_input("> ")
 			self.processCommand(userInput)
 
 
@@ -512,7 +516,8 @@ class HackerNewsShell:
 		print "| '_ \ | '_ \ / __|| '_ \ "
 		print "| | | || | | |\__ \| | | |"
 		print "|_| |_||_| |_||___/|_| |_|"
-		print "======== COMMANDS ========"
+		print ""
+		print " - by Scott Jackson "
 		print "To enter a command, type the key and press return."
 		print "NB: parentheses indicate which of two options is the default."
 		print ""
@@ -536,15 +541,58 @@ class HackerNewsShell:
 
 	def checkForUpdates(self):
 		"""
+<<<<<<< HEAD
 		Tells the user where they can get the latest version of hnsh.
 		
 		This is a temporary meausre until I can find a better way to update the program.
 		"""
 		input = raw_input("To update hnsh, go to http://github.com/scottjacksonx/hnsh and download the latest version. Press Return to continue:")
 		self.printStories()
+=======
+		Downloads the latest version of the program.
+		"""
+		# Get a definite yes or no answer from the user.
+		input = ""
+		while  input != "y" and input != "yes" and input != "n" and input != "no":
+			print("  Download the latest version of hnsh? (y/n)")
+			input = raw_input("> ")
+		
+		if input == "y" or input == "yes":
+			print "\n  Downloading the latest version (from GitHub repository)..."
+			serverFile = urllib.urlretrieve("http://github.com/tomwans/hnsh/zipball/master", "hnsh_latest.zip", quickProgressBar)
+			slash = "/"
+			if sys.platform == "win32":
+				slash = "\\"
+			if os.path.isfile("hnsh_latest.zip"):
+				print ""
+				print "  The latest version of hnsh has been downloaded as:"
+				print "  " + sys.path[0] + slash + "hnsh_latest.zip."
+				print ""
+				print "  Would you like to apply the update? (y/n)"
+				if raw_input("> ") == ("y" or "yes" or "Y"):
+					print "\n> Attempting to apply update ..."
+					updateZip = zipfile.ZipFile(sys.path[0] + slash + "hnsh_latest.zip", "r")
+					for name in updateZip.namelist():
+						if (updateZip.getinfo(name).file_size > 0):
+							updateZip.extract(name)
+							shutil.copy(sys.path[0] + slash + name, sys.path[0] + slash + (name.rpartition("/")[2]))
+							#print sys.path[0] + slash + name.rpartition("/")[2]
+							print " ", name, updateZip.getinfo(name).file_size, "bytes"
+				else:
+					print "\n> Download finished! Press enter to exit so you can manually update the files."
+			else:
+				print "Error trying to update. To update manually, go to http://scottjackson.org/software/hnsh/ and download the latest version of hnsh."
+			input = raw_input("\n> Done! Now press enter and re-run this program to use the new version.")
+			self.quit = 1
+		else:
+			input = raw_input("Press Return to go back to stories.")
+			self.printStories()
+>>>>>>> tomwans/master
 			
-			
-			
+def quickProgressBar(blocksSoFar, blockSizeInBytes, totalFileSize):
+	bytesLeft = totalFileSize - (blocksSoFar * blockSizeInBytes)
+	if bytesLeft > 0:
+		print " ", bytesLeft, " bytes left."	
 
 # Just instantiate a HackerNewsShell and let 'er rip!
 hnsh = HackerNewsShell()
