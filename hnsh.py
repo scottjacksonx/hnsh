@@ -5,7 +5,7 @@
 | '_ \ | '_ \ / __|| '_ \ 
 | | | || | | |\__ \| | | |
 |_| |_||_| |_||___/|_| |_|
-hacker news shell - version 1.0.0
+hacker news shell - version 1.0.1
 
 hnsh lets you browse and read Hacker News[1] from the shell.
 
