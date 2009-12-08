@@ -548,8 +548,8 @@ class HackerNewsShell:
 			input = raw_input("> ")
 		
 		if input == "y" or input == "yes":
-			print "\n  Downloading the latest version (from GitHub repository)..."
-			serverFile = urllib.urlretrieve("http://github.com/tomwans/hnsh/zipball/master", "hnsh_latest.zip", quickProgressBar)
+			print "\n  Downloading the latest version from GitHub repository..."
+			serverFile = urllib.urlretrieve("http://github.com/scottjacksonx/hnsh/zipball/master", "hnsh_latest.zip", quickProgressBar)
 			slash = "/"
 			if sys.platform == "win32":
 				slash = "\\"
@@ -571,7 +571,7 @@ class HackerNewsShell:
 				else:
 					print "\n> Download finished! Press enter to exit so you can manually update the files."
 			else:
-				print "Error trying to update. To update manually, go to http://scottjackson.org/software/hnsh/ and download the latest version of hnsh."
+				print "Error trying to update automatically. To update manually, go to http://github.com/scottjacksonx/hnsh and download the latest version of hnsh."
 			input = raw_input("\n> Done! Now press enter and re-run this program to use the new version.")
 			self.quit = 1
 		else:
