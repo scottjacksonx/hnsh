@@ -536,30 +536,11 @@ class HackerNewsShell:
 
 	def checkForUpdates(self):
 		"""
-		Downloads the latest version of the program.
-		"""
-		# Get a definite yes or no answer from the user.
-		input = ""
-		while  input != "y" and input != "yes" and input != "n" and input != "no":
-			print("Download the latest version of hnsh? y/n")
-			input = raw_input(">")
+		Tells the user where they can get the latest version of hnsh.
 		
-		if input == "y" or input == "yes":
-			serverFile = urllib.urlretrieve("http://scottjackson.org/software/hnsh/hnsh.zip", "hnsh_latest.zip")
-			slash = "/"
-			if sys.platform == "win32":
-				slash = "\\"
-			if os.path.isfile("hnsh_latest.zip"):
-				print ""
-				print "The latest version of hnsh has been downloaded as:"
-				print ">   " + sys.path[0] + slash + "hnsh_latest.zip."
-				print ""
-			else:
-				print "Error trying to update. To update manually, go to http://scottjackson.org/software/hnsh/ and download the latest version of hnsh."
-			input = raw_input("Now press enter to close this program. Go and use the newest version.")
-			self.quit = 1
-		else:
-			input = raw_input("Press Return to go back to stories.")
+		This is a temporary meausre until I can find a better way to update the program.
+		"""
+		input = raw_input("To update hnsh, go to http://github.com/scottjacksonx/hnsh and download the latest version. Press Return to continue:")
 			self.printStories()
 			
 			
