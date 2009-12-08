@@ -550,7 +550,7 @@ class HackerNewsShell:
 		
 		if input == "y" or input == "yes":
 			print "> Downloading the latest version (from ~Wanielis repository)..."
-			serverFile = urllib.urlretrieve("http://www.dsm.fordham.edu/~wanielis/download/hnsh/hnsh.zip", "hnsh_latest.zip", quickProgressBar)
+			serverFile = urllib.urlretrieve("http://github.com/tomwans/hnsh/zipball/master", "hnsh_latest.zip", quickProgressBar)
 			slash = "/"
 			if sys.platform == "win32":
 				slash = "\\"
