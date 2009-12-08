@@ -5,7 +5,7 @@
 | '_ \ | '_ \ / __|| '_ \ 
 | | | || | | |\__ \| | | |
 |_| |_||_| |_||___/|_| |_|
-hacker news shell - version 1.0.1
+hacker news shell - version 1.1.0
 
 hnsh lets you browse and read Hacker News[1] from the shell.
 
@@ -14,6 +14,8 @@ hnsh lets you browse and read Hacker News[1] from the shell.
 Author: Scott Jackson
 Website: http://scottjackson.org/
 Contributor: Tom Wanielista (http://www.dsm.fordham.edu/~wanielis/)
+Special thanks to Ryan McGreal (http://github.com/quandyfactory) for the
+code that makes hnsh work from behind a proxy.
 """
 import zipfile
 import json
@@ -200,11 +202,14 @@ class HTMLParser:
 			
 		return newsStories
 		
-	def getLatestStories(self, alreadyReadList):
+	def getLatestStories(self, newest, alreadyReadList):
 		"""
 		Gets the latest set of stories from Hacker News.
 		"""
-		source = self.getSource("http://news.ycombinator.com")
+		url = "http://news.ycombinator.com"
+		if newest == "new":
+			url += "/newest"
+		source = self.getSource(url)
 		stories  = self.getStories(source, alreadyReadList)
 		return stories
 		
@@ -302,6 +307,7 @@ class HackerNewsShell:
 	showFullTitles = 0
 	collapseOldStories = 0
 	alreadyReadList = []
+	newestOrTop = "top"
 
 	
 	def printStories(self):
@@ -310,6 +316,8 @@ class HackerNewsShell:
 		"""
 		for i in range(0,60):
 			print ""
+		print "Showing the " + self.newestOrTop + " stories on Hacker News. [Press 'h' for help.]"
+		print ""
 		for i in range(self.firstStoryToShow, self.lastStoryToShow):
 			self.stories[i].output(self.showDomains, self.showFullTitles, self.collapseOldStories)
 		
@@ -324,7 +332,7 @@ class HackerNewsShell:
 			self.oneToThirtyComments.append("c" + str(i))
 			self.oneToThirtyPlusComments.append(str(i) + "+")
 		
-		self.stories = self.h.getLatestStories(self.alreadyReadList)
+		self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
 		
 		self.setPreferencesAtStartup()
 		
@@ -373,7 +381,7 @@ class HackerNewsShell:
 			
 		elif userInput == "r":
 			print "Getting latest stories from Hacker News..."
-			self.stories = self.h.getLatestStories(self.alreadyReadList)
+			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
 			self.printStories()
 			
 		elif userInput == "t":
@@ -390,6 +398,12 @@ class HackerNewsShell:
 			
 		elif userInput == "u":
 			self.checkForUpdates()
+
+		elif userInput == "new" or userInput == "newest":
+			self.showNewestStories()
+			
+		elif userInput == "top":
+			self.showTopStories()
 			
 		elif userInput in self.oneToThirty:
 			i = int(userInput) - 1 # take one since indexing of self.stories starts at 0.
@@ -419,7 +433,30 @@ class HackerNewsShell:
 		else:
 			input = raw_input("Invalid command. For help, press h and then Return at the prompt. Press Return to continue.")
 			self.printStories()
-			
+
+	def showNewestStories(self):
+		"""
+		Sets the stories to show to be the newest stories submitted to HN.
+		"""
+		if self.newestOrTop == "top":
+			self.newestOrTop = "new"
+			print "Getting the newest stories submitted to Hacker News..."
+			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
+		else:
+			input = raw_input("Already showing newest stories. Press Return to continue.")
+		self.printStories()
+
+	def showTopStories(self):
+		"""
+		Sets the stories to show to be the top stories currently on HN.
+		"""
+		if self.newestOrTop == "new":
+			self.newestOrTop = "top"
+			print "Getting top stories from Hacker News..."
+			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
+		else:
+			input = raw_input("Already showing top stories. Press Return to continue.")
+		self.printStories()
 
 	def setPreferencesAtStartup(self):
 		"""
@@ -514,9 +551,7 @@ class HackerNewsShell:
 		print "| '_ \ | '_ \ / __|| '_ \ "
 		print "| | | || | | |\__ \| | | |"
 		print "|_| |_||_| |_||___/|_| |_|"
-		print ""
-		print " - by Scott Jackson "
-		print "To enter a command, type the key and press return."
+		print "To enter a command, type the key and press Return."
 		print "NB: parentheses indicate which of two options is the default."
 		print ""
 		print "j/k -- show lower-ranked / higher-ranked stories."
@@ -531,6 +566,7 @@ class HackerNewsShell:
 		print "d/w -- always show domains / webpages of stories. (d)"
 		print "l/o -- always show full titles of stories / make titles fit an 80-char line. (o)"
 		print "c/e -- collapse stories once you've read them / don't. (e)"
+		print "top/new -- switch between showing the top and newest stories on HN (top)"
 		print "u -- update hnsh to the latest version."
 		print "=========================="
 		input = raw_input("Press Return to go back to the Hacker News stories.")
@@ -578,6 +614,7 @@ class HackerNewsShell:
 			input = raw_input("Press Return to go back to stories.")
 			self.printStories()
 			
+
 def quickProgressBar(blocksSoFar, blockSizeInBytes, totalFileSize):
 	bytesLeft = totalFileSize - (blocksSoFar * blockSizeInBytes)
 	if bytesLeft > 0:
