@@ -1,11 +1,6 @@
 """
- _                  _     
-| |                | |    
-| |__   _ __   ___ | |__  
-| '_ \ | '_ \ / __|| '_ \ 
-| | | || | | |\__ \| | | |
-|_| |_||_| |_||___/|_| |_|
-hacker news shell - version 1.0.1
+Y N S H
+y-c hacker news shell - version 1.0.1
 
 hnsh lets you browse and read Hacker News[1] from the shell.
 
@@ -551,7 +546,7 @@ class HackerNewsShell:
 		
 		if input == "y" or input == "yes":
 			print "\n  Downloading the latest version (from GitHub repository)..."
-			serverFile = urllib.urlretrieve("http://github.com/tomwans/hnsh/zipball/master", "hnsh_latest.zip", quickProgressBar)
+			serverFile = urllib.urlretrieve("http://github.com/tomwans/ynsh/zipball/master", "hnsh_latest.zip", quickProgressBar)
 			slash = "/"
 			if sys.platform == "win32":
 				slash = "\\"
