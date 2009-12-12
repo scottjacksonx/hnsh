@@ -5,7 +5,7 @@
 | '_ \ | '_ \ / __|| '_ \ 
 | | | || | | |\__ \| | | |
 |_| |_||_| |_||___/|_| |_|
-hacker news shell - version 1.1.3
+hacker news shell - version 1.1.4
 
 hnsh lets you browse and read Hacker News[1] from the shell.
 
@@ -55,16 +55,25 @@ class HTMLParser:
 			source = f.read()
 			f.close()
 			return source
-		except URLError:
-			proxyAddress = raw_input("Uh oh. Something went wrong, and it could be because you're using a proxy. If you're using a proxy, enter its IP Address:")
-			proxies = { 'http': proxyAddress }
-			proxy_support = urllib2.ProxyHandler(proxies)
-			opener = urllib2.build_opener(proxy_support)
-			urllib2.install_opener(opener)
-			f = urllib2.urlopen(url)
-			source = f.read()
-			f.close()
-			return source
+		except urllib2.URLError:
+			proxyAddress = raw_input("Uh oh. Something went wrong, and it could be because you're using a proxy. If you're not using a proxy, enter 'n' (without the quotes). If you're using a proxy, enter its IP Address: ")
+			if proxyAddress != "n":
+				proxies = { 'http': proxyAddress }
+				proxy_support = urllib2.ProxyHandler(proxies)
+				opener = urllib2.build_opener(proxy_support)
+				urllib2.install_opener(opener)
+				f = urllib2.urlopen(url)
+				source = f.read()
+				f.close()
+				return source
+			else:
+				print ""
+				print ""
+				print("hnsh failed to stories from Hacker News. One of two things could be wrong here:")
+				print("    - Something might be up with your internet connection, or")
+				print("    - HN could be down..")
+				input = raw_input("Press Return to quit hnsh. When you think the problem has been solved, start it again.")
+				self.quit = 1
 		
 	def getStoryNumber(self, source):
 		"""
@@ -359,12 +368,16 @@ class HackerNewsShell:
 			self.oneToThirtySubmitters.append("s" + str(i))
 		
 		print "Getting latest stories from Hacker News..."
-		self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
+		try:
+			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
 		
-		self.setPreferencesAtStartup()
+			self.setPreferencesAtStartup()
 		
-		self.printStories()
+			self.printStories()
 		
+		except:
+			self.quit = 1
+
 		self.loop()
 		
 		
