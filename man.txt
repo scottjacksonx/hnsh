@@ -58,6 +58,10 @@ c# -- open comments for story number # in your web browser.
 	"#+" opens story # and its Hacker News comments. Example:
 	Typing "1+" (no quotes) opens up story number 1 and its Hacker News comments.
 	
+s# -- open up the submitter for story number # in your web browser.
+    "s#" opens the submitter for story #. Example:
+    Typing "s15" opens up the HN user profile for the person that submitted story number 15.
+	
 d/w -- always show domains / webpages of stories.
 	"d" tells the program to always show domains for stories, and w tells the program to always show the full URL of the page the story is on. By default, hnsh shows domains for stories. Example:
 	

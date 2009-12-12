@@ -5,14 +5,13 @@
 | '_ \ | '_ \ / __|| '_ \ 
 | | | || | | |\__ \| | | |
 |_| |_||_| |_||___/|_| |_|
-hacker news shell - version 1.1.2
+hacker news shell - version 1.1.3
 
 hnsh lets you browse and read Hacker News[1] from the shell.
 
 [1] http://news.ycombinator.com
 
-Author: Scott Jackson
-Website: http://scottjackson.org/
+Author: Scott Jackson (http://scottjackson.org/)
 Contributor for the updating code: Tom Wanielista (http://www.dsm.fordham.edu/~wanielis/)
 Special thanks to Ryan McGreal (http://github.com/quandyfactory) for the
 code that makes hnsh work from behind a proxy.
@@ -315,6 +314,7 @@ class HackerNewsShell:
 	oneToThirty = []	# List: "1", "2", ..., "30".
 	oneToThirtyComments = [] # List: "c1", "c2", ..., "c30".
 	oneToThirtyPlusComments = [] # List: "1+", "2+", ..., "30+"
+	oneToThirtySubmitters = []	# List: "s1", "s2", ..., "s30"
 	lastRefreshed = time.localtime()
 	
 	# User Preferences #
@@ -356,6 +356,7 @@ class HackerNewsShell:
 			self.oneToThirty.append(str(i))
 			self.oneToThirtyComments.append("c" + str(i))
 			self.oneToThirtyPlusComments.append(str(i) + "+")
+			self.oneToThirtySubmitters.append("s" + str(i))
 		
 		print "Getting latest stories from Hacker News..."
 		self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
@@ -416,7 +417,7 @@ class HackerNewsShell:
 			self.lastStoryToShow = self.STORIES_PER_SCREEN
 			self.printStories()
 			
-		elif userInput == "s":
+		elif userInput == "p":
 			self.printStories()
 			
 		elif userInput == "d" or userInput == "w" or userInput == "l" or userInput == "o" or userInput == "c" or userInput == "e":
@@ -454,6 +455,11 @@ class HackerNewsShell:
 			webbrowser.open_new_tab(self.stories[i].commentsURL)
 			webbrowser.open_new_tab(self.stories[i].URL)
 			# Shows story first, but tab order goes "comments, story"
+			self.printStories()
+			
+		elif userInput in self.oneToThirtySubmitters:
+			i = int(userInput[1:]) - 1
+			webbrowser.open_new_tab("http://news.ycombinator.com/user?id=" + self.stories[i].submitter)
 			self.printStories()
 			
 			
