@@ -5,7 +5,7 @@
 | '_ \ | '_ \ / __|| '_ \ 
 | | | || | | |\__ \| | | |
 |_| |_||_| |_||___/|_| |_|
-hacker news shell - version 1.1.4
+hacker news shell - version 1.1.5
 
 hnsh lets you browse and read Hacker News[1] from the shell.
 
@@ -341,7 +341,16 @@ class HackerNewsShell:
 		"""
 		months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 		month = months[self.lastRefreshed.tm_mon - 1][:3]
-		time = str(self.lastRefreshed.tm_hour) + ":" + str(self.lastRefreshed.tm_min) + ", " + month + " " + str(self.lastRefreshed.tm_mday)
+		
+		hours = str(self.lastRefreshed.tm_hour)
+		if self.lastRefreshed.tm_hour < 10:
+			hours = "0" + hours
+		
+		minutes = str(self.lastRefreshed.tm_min)
+		if self.lastRefreshed.tm_min < 10:
+			minutes = "0" + minutes
+			
+		time = hours + ":" + minutes + ", " + month + " " + str(self.lastRefreshed.tm_mday)
 		return time
 	
 	def printStories(self):
