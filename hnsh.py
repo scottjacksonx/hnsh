@@ -1,16 +1,34 @@
 """
-Y N S H
-y-c hacker news shell - version 1.0.1
+ _                  _     
+| |                | |    
+| |__   _ __   ___ | |__  
+| '_ \ | '_ \ / __|| '_ \ 
+| | | || | | |\__ \| | | |
+|_| |_||_| |_||___/|_| |_|
+hacker news shell - version 1.1.5
 
 hnsh lets you browse and read Hacker News[1] from the shell.
 
 [1] http://news.ycombinator.com
 
-THIS IS JUST A STUDENT EXPERIMENT, DON'T MIND ME!
+Author: Scott Jackson (http://scottjackson.org/)
+Contributor for the updating code: Tom Wanielista (http://www.dsm.fordham.edu/~wanielis/)
+Special thanks to Ryan McGreal (http://github.com/quandyfactory) for the
+code that makes hnsh work from behind a proxy.
 
-Author: Scott Jackson
-Website: http://scottjackson.org/
-Contributor: Tom Wanielista (http://www.dsm.fordham.edu/~wanielis/)
+======
+hnsh is released under the GPL.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License (http://www.gnu.org/licenses/) for more details.
+======
 """
 import zipfile
 import json
@@ -20,6 +38,7 @@ import webbrowser
 import sys
 from BeautifulSoup import BeautifulSoup
 import os, shutil
+import time
 
 
 class HTMLParser:
@@ -36,16 +55,25 @@ class HTMLParser:
 			source = f.read()
 			f.close()
 			return source
-		except URLError:
-			proxyAddress = raw_input("Uh oh. Something went wrong, and it could be because you're using a proxy. If you're using a proxy, enter its IP Address:")
-			proxies = { 'http': proxyAddress }
-			proxy_support = urllib2.ProxyHandler(proxies)
-			opener = urllib2.build_opener(proxy_support)
-			urllib2.install_opener(opener)
-			f = urllib2.urlopen(url)
-			source = f.read()
-			f.close()
-			return source
+		except urllib2.URLError:
+			proxyAddress = raw_input("Uh oh. Something went wrong, and it could be because you're using a proxy. If you're not using a proxy, enter 'n' (without the quotes). If you're using a proxy, enter its IP Address: ")
+			if proxyAddress != "n":
+				proxies = { 'http': proxyAddress }
+				proxy_support = urllib2.ProxyHandler(proxies)
+				opener = urllib2.build_opener(proxy_support)
+				urllib2.install_opener(opener)
+				f = urllib2.urlopen(url)
+				source = f.read()
+				f.close()
+				return source
+			else:
+				print ""
+				print ""
+				print("hnsh failed to stories from Hacker News. One of two things could be wrong here:")
+				print("    - Something might be up with your internet connection, or")
+				print("    - HN could be down..")
+				input = raw_input("Press Return to quit hnsh. When you think the problem has been solved, start it again.")
+				self.quit = 1
 		
 	def getStoryNumber(self, source):
 		"""
@@ -197,11 +225,14 @@ class HTMLParser:
 			
 		return newsStories
 		
-	def getLatestStories(self, alreadyReadList):
+	def getLatestStories(self, newest, alreadyReadList):
 		"""
 		Gets the latest set of stories from Hacker News.
 		"""
-		source = self.getSource("http://news.ycombinator.com")
+		url = "http://news.ycombinator.com"
+		if newest == "newest":
+			url += "/newest"
+		source = self.getSource(url)
 		stories  = self.getStories(source, alreadyReadList)
 		return stories
 		
@@ -292,6 +323,8 @@ class HackerNewsShell:
 	oneToThirty = []	# List: "1", "2", ..., "30".
 	oneToThirtyComments = [] # List: "c1", "c2", ..., "c30".
 	oneToThirtyPlusComments = [] # List: "1+", "2+", ..., "30+"
+	oneToThirtySubmitters = []	# List: "s1", "s2", ..., "s30"
+	lastRefreshed = time.localtime()
 	
 	# User Preferences #
 	userPrefsFileName = "hnsh_prefs.txt"
@@ -299,7 +332,26 @@ class HackerNewsShell:
 	showFullTitles = 0
 	collapseOldStories = 0
 	alreadyReadList = []
+	newestOrTop = "top"	# Whether or not to show the newest or the top stories.
 
+	
+	def getLastRefreshedTime(self):
+		"""
+		Returns the last-refreshed time in a human-readable format.
+		"""
+		months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+		month = months[self.lastRefreshed.tm_mon - 1][:3]
+		
+		hours = str(self.lastRefreshed.tm_hour)
+		if self.lastRefreshed.tm_hour < 10:
+			hours = "0" + hours
+		
+		minutes = str(self.lastRefreshed.tm_min)
+		if self.lastRefreshed.tm_min < 10:
+			minutes = "0" + minutes
+			
+		time = hours + ":" + minutes + ", " + month + " " + str(self.lastRefreshed.tm_mday)
+		return time
 	
 	def printStories(self):
 		"""
@@ -307,6 +359,8 @@ class HackerNewsShell:
 		"""
 		for i in range(0,60):
 			print ""
+		print "Showing the " + self.newestOrTop + " stories. [last updated " + self.getLastRefreshedTime() + "] [" + "'h' for help.]"
+		print ""
 		for i in range(self.firstStoryToShow, self.lastStoryToShow):
 			self.stories[i].output(self.showDomains, self.showFullTitles, self.collapseOldStories)
 		
@@ -320,13 +374,19 @@ class HackerNewsShell:
 			self.oneToThirty.append(str(i))
 			self.oneToThirtyComments.append("c" + str(i))
 			self.oneToThirtyPlusComments.append(str(i) + "+")
+			self.oneToThirtySubmitters.append("s" + str(i))
 		
-		self.stories = self.h.getLatestStories(self.alreadyReadList)
+		print "Getting latest stories from Hacker News..."
+		try:
+			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
 		
-		self.setPreferencesAtStartup()
+			self.setPreferencesAtStartup()
 		
-		self.printStories()
+			self.printStories()
 		
+		except:
+			self.quit = 1
+
 		self.loop()
 		
 		
@@ -370,7 +430,8 @@ class HackerNewsShell:
 			
 		elif userInput == "r":
 			print "Getting latest stories from Hacker News..."
-			self.stories = self.h.getLatestStories(self.alreadyReadList)
+			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
+			self.lastRefreshed = time.localtime()
 			self.printStories()
 			
 		elif userInput == "t":
@@ -378,7 +439,7 @@ class HackerNewsShell:
 			self.lastStoryToShow = self.STORIES_PER_SCREEN
 			self.printStories()
 			
-		elif userInput == "s":
+		elif userInput == "p":
 			self.printStories()
 			
 		elif userInput == "d" or userInput == "w" or userInput == "l" or userInput == "o" or userInput == "c" or userInput == "e":
@@ -387,6 +448,12 @@ class HackerNewsShell:
 			
 		elif userInput == "u":
 			self.checkForUpdates()
+
+		elif userInput == "new" or userInput == "newest":
+			self.showNewestStories()
+			
+		elif userInput == "top":
+			self.showTopStories()
 			
 		elif userInput in self.oneToThirty:
 			i = int(userInput) - 1 # take one since indexing of self.stories starts at 0.
@@ -412,11 +479,44 @@ class HackerNewsShell:
 			# Shows story first, but tab order goes "comments, story"
 			self.printStories()
 			
+		elif userInput in self.oneToThirtySubmitters:
+			i = int(userInput[1:]) - 1
+			webbrowser.open_new_tab("http://news.ycombinator.com/user?id=" + self.stories[i].submitter)
+			self.printStories()
+			
 			
 		else:
 			input = raw_input("Invalid command. For help, press h and then Return at the prompt. Press Return to continue.")
 			self.printStories()
 			
+	def refreshStories(self):
+		"""
+		Gets the latest stories from HN and updates the lastRefreshed time.
+		"""
+
+	def showNewestStories(self):
+		"""
+		Sets the stories to show to be the newest stories submitted to HN.
+		"""
+		if self.newestOrTop == "top":
+			self.newestOrTop = "newest"
+			print "Getting the newest stories submitted to Hacker News..."
+			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
+		else:
+			input = raw_input("Already showing newest stories. Press Return to continue.")
+		self.printStories()
+
+	def showTopStories(self):
+		"""
+		Sets the stories to show to be the top stories currently on HN.
+		"""
+		if self.newestOrTop == "newest":
+			self.newestOrTop = "top"
+			print "Getting top stories from Hacker News..."
+			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
+		else:
+			input = raw_input("Already showing top stories. Press Return to continue.")
+		self.printStories()
 
 	def setPreferencesAtStartup(self):
 		"""
@@ -511,25 +611,23 @@ class HackerNewsShell:
 		print "| '_ \ | '_ \ / __|| '_ \ "
 		print "| | | || | | |\__ \| | | |"
 		print "|_| |_||_| |_||___/|_| |_|"
+		print "A program by Scott Jackson"
 		print ""
-		print " - by Scott Jackson "
-		print "To enter a command, type the key and press return."
+		print "To enter a command, type the key and press Return."
 		print "NB: parentheses indicate which of two options is the default."
 		print ""
+		print "Basic Commands:"
 		print "j/k -- show lower-ranked / higher-ranked stories."
-		print "t -- go to the top of the list."
-		#print "s -- clear screen and show current stories."
 		print "r -- get the latest stories from Hacker News."
 		print "q -- quit."
-		print "h -- help."
 		print "# -- open story number # in your web browser."
 		print "c# -- open comments for story number # in your web browser."
 		print "#+ -- open up story number # AND its comments in your web browser."
-		print "d/w -- always show domains / webpages of stories. (d)"
-		print "l/o -- always show full titles of stories / make titles fit an 80-char line. (o)"
-		print "c/e -- collapse stories once you've read them / don't. (e)"
+		print "top/new -- switch between showing the top and newest stories on HN. (top)"
+		print "c/e -- collapse stories you've already read / don't collapse them. (e)"
 		print "u -- update hnsh to the latest version."
 		print "=========================="
+		print "For more commands, see the man.txt file."
 		input = raw_input("Press Return to go back to the Hacker News stories.")
 		self.printStories()
 
@@ -537,6 +635,8 @@ class HackerNewsShell:
 	def checkForUpdates(self):
 		"""
 		Downloads the latest version of the program.
+		
+		Big thanks to Tom Wanielista for contributing the meat of this awesome update code.
 		"""
 		# Get a definite yes or no answer from the user.
 		input = ""
@@ -545,8 +645,8 @@ class HackerNewsShell:
 			input = raw_input("> ")
 		
 		if input == "y" or input == "yes":
-			print "\n  Downloading the latest version (from GitHub repository)..."
-			serverFile = urllib.urlretrieve("http://github.com/tomwans/ynsh/zipball/master", "hnsh_latest.zip", quickProgressBar)
+			print "\n  Downloading the latest version from GitHub repository..."
+			serverFile = urllib.urlretrieve("http://github.com/scottjacksonx/hnsh/zipball/master", "hnsh_latest.zip", quickProgressBar)
 			slash = "/"
 			if sys.platform == "win32":
 				slash = "\\"
@@ -568,13 +668,14 @@ class HackerNewsShell:
 				else:
 					print "\n> Download finished! Press enter to exit so you can manually update the files."
 			else:
-				print "Error trying to update. To update manually, go to http://scottjackson.org/software/hnsh/ and download the latest version of hnsh."
+				print "Error trying to update automatically. To update manually, go to http://github.com/scottjacksonx/hnsh and download the latest version of hnsh."
 			input = raw_input("\n> Done! Now press enter and re-run this program to use the new version.")
 			self.quit = 1
 		else:
 			input = raw_input("Press Return to go back to stories.")
 			self.printStories()
 			
+
 def quickProgressBar(blocksSoFar, blockSizeInBytes, totalFileSize):
 	bytesLeft = totalFileSize - (blocksSoFar * blockSizeInBytes)
 	if bytesLeft > 0:

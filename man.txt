@@ -9,18 +9,26 @@ hacker news shell manual.
 
 ======== CONTENTS ========
 1. Introduction
-2. Commands
-3. Preferences
+2. Starting hnsh
+3. Commands
+4. Preferences
 ==========================
 
-
+--------------------------
 1. Introduction
 Hacker News Shell (hnsh) lets you interact with the front page of Hacker News right from the shell. You can browse stories, open up stories in your browser, and open up HN comments (opening up comments also gives you a quick way to upmod stories).
 
 hnsh is written in Python, so it is cross-platform. It was built (and mainly used) on a Macintosh, but I have also tested it on a Windows box and an Ubuntu machine.
+--------------------------
+2. Starting hnsh
+To run hnsh, start up your terminal and navigate to the directory that the hnsh files are in (the same directory this man.txt file is in, by default). If you're not on a Windows machine, run
 
-
-2. Commands
+    $ python hnsh.py
+    
+and the program will start. If you're using windows, just run
+    hnsh.py
+--------------------------
+3. Commands
 When you start hnsh, you see the top 5 stories currently on Hacker News and a prompt for you to enter a command. What follows is a listing of commands you can enter, their meanings, and examples of how to use them where appropriate.
 
 j/k -- show lower-ranked / higher-ranked stories.
@@ -50,12 +58,17 @@ c# -- open comments for story number # in your web browser.
 	"#+" opens story # and its Hacker News comments. Example:
 	Typing "1+" (no quotes) opens up story number 1 and its Hacker News comments.
 	
+s# -- open up the submitter for story number # in your web browser.
+    "s#" opens the submitter for story #. Example:
+    Typing "s15" opens up the HN user profile for the person that submitted story number 15.
+	
 d/w -- always show domains / webpages of stories.
 	"d" tells the program to always show domains for stories, and w tells the program to always show the full URL of the page the story is on. By default, hnsh shows domains for stories. Example:
 	
 	By default, a screen may look like this:
 	
 <demo>
+Showing the top stories on Hacker News. [Press 'h' for help.]
 
 1  > No one gets fired for hiring IBM - How our pitch was stolen from us...
      (solidstategroup.com) 
@@ -82,6 +95,7 @@ d/w -- always show domains / webpages of stories.
 	After entering the command "w" (no quotes), that screen would like this:
 	
 <demo>
+Showing the top stories on Hacker News. [Press 'h' for help.]
 
 1  > No one gets fired for hiring IBM - How our pitch was stolen from us...
      http://www.solidstategroup.com/what-we-think/no-one-gets-fired-for-hiring-ibm
@@ -116,6 +130,7 @@ c/e -- collapse stories once you've read them / don't.
 	By default, a screen may look like this:
 	
 <demo>	
+Showing the top stories on Hacker News. [Press 'h' for help.]
 
 1  > Google acquires AppJet/Etherpad
      (etherpad.com) 
@@ -142,6 +157,7 @@ c/e -- collapse stories once you've read them / don't.
 	After reading stories 1 and 5 (with commands "1" and "5", respectively), that screen would look like this:
 	
 <demo>
+Showing the top stories on Hacker News. [Press 'h' for help.]
 
 1  > [already read]
 
@@ -162,9 +178,11 @@ c/e -- collapse stories once you've read them / don't.
 </demo>
 	
 	To switch back to showing full details for stories again, use the "e" command.
-	
+
+top/new -- switch between showing the top and newest stories on HN.
+
 u -- update hnsh to the latest version.
 	The "u" command downloads the latest version of hnsh from http://scottjackson.org.
-
-3. Preferences
+--------------------------
+4. Preferences
 User preferences (the d/w, l/o and c/e commands) are stored in a file called hnsh_prefs.txt in the same directory as hnsh.py. The file consists of one line of text, and every character represents a preference. If hnsh_prefs.txt does not exist or cannot be opened for writing, then any preferences changed will only stay in effect until the program is closed.
