@@ -68,54 +68,58 @@ d/w -- always show domains / webpages of stories.
 	By default, a screen may look like this:
 	
 <demo>
-Showing the top stories on Hacker News. [Press 'h' for help.]
+Showing the top stories. [last updated 21:42, Dec 14] ['h' for help.]
 
-1  > No one gets fired for hiring IBM - How our pitch was stolen from us...
-     (solidstategroup.com) 
-     11 points / submitted by: dabeeeenster / 0 comments
+1  > Amazon EC2 Spot Instances - And Now How Much Would You Pay?
+     (aws.typepad.com) 
+     44 points / submitted by: jeffbarr / 25 comments
 
-2  > Three lessons I learnt from porting Diablo
-     (petewarden.typepad.com) 
-     43 points / submitted by: petewarden / 10 comments
+2  > jQuery.Behavior: Simple jQuery library for boosting productivity
+     (rodpetrovic.com) 
+     10 points / submitted by: vuknje / 0 comments
 
-3  > Ridiculous User Interfaces In Film, and the Man Who Designs Them
-     (gizmodo.com) 
-     16 points / submitted by: nreece / 5 comments
+3  > A simple Chrome extension that replaces your New Tab page with a to-do l...
+     (github.com) 
+     33 points / submitted by: r11t / 17 comments
 
-4  > Analyzing Y Combinator
-     (awesomezombie.com) 
-     109 points / submitted by: ig1 / 38 comments
+4  > Why So Many Are So Wrong on the 'Google Phone'
+     (pcmag.com) 
+     24 points / submitted by: tokenadult / 10 comments
 
-5  > GamePro burns developers on $5000 programming contest
-     (jhherren.wordpress.com) 
-     10 points / submitted by: tengkahwee / 1 comment
+5  > Clojure Roundup: FlightCaster (YC S09), Crane, Incanter, Leiningen
+     (infoq.com) 
+     52 points / submitted by: jaf12duke / 3 comments
+
+>
 
 </demo>
 
 	After entering the command "w" (no quotes), that screen would like this:
 	
 <demo>
-Showing the top stories on Hacker News. [Press 'h' for help.]
+Showing the top stories. [last updated 21:42, Dec 14] ['h' for help.]
 
-1  > No one gets fired for hiring IBM - How our pitch was stolen from us...
-     http://www.solidstategroup.com/what-we-think/no-one-gets-fired-for-hiring-ibm
-     11 points / submitted by: dabeeeenster / 0 comments
+1  > Amazon EC2 Spot Instances - And Now How Much Would You Pay?
+     http://aws.typepad.com/aws/2009/12/ec2-spot-instances-and-now-how-much-would-you-pay.html
+     44 points / submitted by: jeffbarr / 25 comments
 
-2  > Three lessons I learnt from porting Diablo
-     http://petewarden.typepad.com/searchbrowser/2009/12/three-lessons-i-learnt-from-porting-diablo.html
-     43 points / submitted by: petewarden / 10 comments
+2  > jQuery.Behavior: Simple jQuery library for boosting productivity
+     http://rodpetrovic.com/jquery/behavior/
+     10 points / submitted by: vuknje / 0 comments
 
-3  > Ridiculous User Interfaces In Film, and the Man Who Designs Them
-     http://gizmodo.com/5418342/ridiculous-user-interfaces-in-film-and-the-man-who-designs-them
-     16 points / submitted by: nreece / 5 comments
+3  > A simple Chrome extension that replaces your New Tab page with a to-do l...
+     http://benhiller.github.com/chrome-todo/
+     33 points / submitted by: r11t / 17 comments
 
-4  > Analyzing Y Combinator
-     http://blog.awesomezombie.com/2009/12/analyzing-y-combinator.html
-     109 points / submitted by: ig1 / 38 comments
+4  > Why So Many Are So Wrong on the 'Google Phone'
+     http://www.pcmag.com/article2/0,2817,2357081,00.asp
+     24 points / submitted by: tokenadult / 10 comments
 
-5  > GamePro burns developers on $5000 programming contest
-     http://jhherren.wordpress.com/2009/12/03/gamepro-burns-developers-on-5000-programming-contest/
-     10 points / submitted by: tengkahwee / 1 comment
+5  > Clojure Roundup: FlightCaster (YC S09), Crane, Incanter, Leiningen
+     http://www.infoq.com/news/2009/12/clojure-crane-incanter-leiningen
+     52 points / submitted by: jaf12duke / 3 comments
+
+> 
 
 </demo>
 	
@@ -130,50 +134,56 @@ c/e -- collapse stories once you've read them / don't.
 	By default, a screen may look like this:
 	
 <demo>	
-Showing the top stories on Hacker News. [Press 'h' for help.]
+Showing the top stories. [last updated 21:46, Dec 14] ['h' for help.]
 
-1  > Google acquires AppJet/Etherpad
-     (etherpad.com) 
-     193 points / submitted by: dreeves / 78 comments
+1  > Amazon EC2 Spot Instances - And Now How Much Would You Pay?
+     (aws.typepad.com) 
+     44 points / submitted by: jeffbarr / 25 comments
 
-2  > CrunchPad Litigation Imminent
-     (techcrunch.com) 
-     15 points / submitted by: vrobancho / 4 comments
+2  > jQuery.Behavior: Simple jQuery library for boosting productivity
+     (rodpetrovic.com) 
+     10 points / submitted by: vuknje / 0 comments
 
-3  > Eureqa 
-     (cornell.edu) 
-     32 points / submitted by: kqr2 / 5 comments
+3  > A simple Chrome extension that replaces your New Tab page with a to-do l...
+     (github.com) 
+     33 points / submitted by: r11t / 17 comments
 
-4  > Why I gave away my company to charity
-     (sivers.org) 
-     210 points / submitted by: sivers / 66 comments
+4  > Why So Many Are So Wrong on the 'Google Phone'
+     (pcmag.com) 
+     24 points / submitted by: tokenadult / 10 comments
 
-5  > NYT: Apple has acquired streaming music service Lala
-     (nytimes.com) 
-     10 points / submitted by: chris24 / 1 comment
+5  > Clojure Roundup: FlightCaster (YC S09), Crane, Incanter, Leiningen
+     (infoq.com) 
+     52 points / submitted by: jaf12duke / 3 comments
+
+> 
 
 </demo>
 	
-	After reading stories 1 and 5 (with commands "1" and "5", respectively), that screen would look like this:
+	After reading stories 1 and 5 (with commands "1" and "5", respectively) and having the "c" preference switched on by using the "c" command, that screen would look like this:
 	
 <demo>
 Showing the top stories on Hacker News. [Press 'h' for help.]
 
+Showing the top stories. [last updated 21:46, Dec 14] ['h' for help.]
+
 1  > [already read]
 
-2  > CrunchPad Litigation Imminent
-     (techcrunch.com) 
-     15 points / submitted by: vrobancho / 4 comments
+2  > jQuery.Behavior: Simple jQuery library for boosting productivity
+     (rodpetrovic.com) 
+     10 points / submitted by: vuknje / 0 comments
 
-3  > Eureqa 
-     (cornell.edu) 
-     32 points / submitted by: kqr2 / 5 comments
+3  > A simple Chrome extension that replaces your New Tab page with a to-do l...
+     (github.com) 
+     33 points / submitted by: r11t / 17 comments
 
-4  > Why I gave away my company to charity
-     (sivers.org) 
-     210 points / submitted by: sivers / 66 comments
+4  > Why So Many Are So Wrong on the 'Google Phone'
+     (pcmag.com) 
+     24 points / submitted by: tokenadult / 10 comments
 
 5  > [already read]
+
+> 
 
 </demo>
 	
@@ -182,7 +192,7 @@ Showing the top stories on Hacker News. [Press 'h' for help.]
 top/new -- switch between showing the top and newest stories on HN.
 
 u -- update hnsh to the latest version.
-	The "u" command downloads the latest version of hnsh from http://scottjackson.org.
+	The "u" command downloads the latest version of hnsh from http://github.com
 --------------------------
 4. Preferences
 User preferences (the d/w, l/o and c/e commands) are stored in a file called hnsh_prefs.txt in the same directory as hnsh.py. The file consists of one line of text, and every character represents a preference. If hnsh_prefs.txt does not exist or cannot be opened for writing, then any preferences changed will only stay in effect until the program is closed.
