@@ -663,8 +663,10 @@ class HackerNewsShell:
 						if (updateZip.getinfo(name).file_size > 0):
 							updateZip.extract(name)
 							shutil.copy(sys.path[0] + slash + name, sys.path[0] + slash + (name.rpartition("/")[2]))
-							#print sys.path[0] + slash + name.rpartition("/")[2]
 							print " ", name, updateZip.getinfo(name).file_size, "bytes"
+							os.remove(sys.path[0] + slash + name)
+					os.remove(sys.path[0] + slash + "hnsh_latest.zip")
+					os.rmdir(sys.path[0] + slash + name.rpartition("/")[0])
 				else:
 					print "\n> Download finished! Press enter to exit so you can manually update the files."
 			else:
