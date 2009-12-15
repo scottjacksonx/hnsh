@@ -5,7 +5,7 @@
 | '_ \ | '_ \ / __|| '_ \ 
 | | | || | | |\__ \| | | |
 |_| |_||_| |_||___/|_| |_|
-hacker news shell - version 1.1.6
+hacker news shell - version 1.1.7
 
 hnsh lets you browse and read Hacker News[1] from the shell.
 
@@ -162,6 +162,14 @@ class HTMLParser:
 		urlStart = source.find('item?id=')
 		urlEnd = source.find('"', urlStart)
 		return "http://news.ycombinator.com/" + source[urlStart:urlEnd]
+		
+	def getKarma(self, source):
+		"""
+		Gets the karma count of a user from a page.
+		"""
+		karmaStart = source.find('<td valign=top>karma:</td><td>') + 30
+		karmaEnd = source.find('</td>', karmaStart)
+		return int(source[karmaStart:karmaEnd])
 		
 		
 	def getStories(self, source, alreadyReadList):
@@ -333,6 +341,8 @@ class HackerNewsShell:
 	collapseOldStories = 0
 	alreadyReadList = []
 	newestOrTop = "top"	# Whether or not to show the newest or the top stories.
+	hnUserName = ""
+	karma = -1000
 
 	
 	def getLastRefreshedTime(self):
@@ -353,14 +363,51 @@ class HackerNewsShell:
 		time = hours + ":" + minutes + ", " + month + " " + str(self.lastRefreshed.tm_mday)
 		return time
 	
+	def printHeader(self):
+		"""
+		Prints the top line of the screen before the stories themselves.
+		"""
+		#
+		#
+		#
+		#
+		#
+		#
+		#
+		#
+		#
+		#
+		# Move the URL-getting code so that it is run every time stories are *refreshed*.
+		# 
+		#
+		#
+		#
+		#
+		#
+		#
+		#
+		#
+		#
+		
+		karmaDetails = ""
+		if self.hnUserName != "":
+			source = self.h.getSource("http://news.ycombinator.com/user?id=" + self.hnUserName)
+			self.karma = self.h.getKarma(source)
+			karmaDetails = " | " + self.hnUserName + " (" + str(self.karma) + ")"
+			
+	
+		for i in range(0,60):
+			print ""
+		print "Showing " + self.newestOrTop + " stories. | Last updated " + self.getLastRefreshedTime() + karmaDetails
+		print ""
+		
+		
 	def printStories(self):
 		"""
 		Outputs all of the stories to the screen.
 		"""
-		for i in range(0,60):
-			print ""
-		print "Showing the " + self.newestOrTop + " stories. [last updated " + self.getLastRefreshedTime() + "] [" + "'h' for help.]"
-		print ""
+		self.printHeader()
+		
 		for i in range(self.firstStoryToShow, self.lastStoryToShow):
 			self.stories[i].output(self.showDomains, self.showFullTitles, self.collapseOldStories)
 		
@@ -455,6 +502,10 @@ class HackerNewsShell:
 		elif userInput == "top":
 			self.showTopStories()
 			
+		elif userInput[:5] == "user ":
+			self.hnUserName = userInput[5:]
+			self.printStories()
+			
 		elif userInput in self.oneToThirty:
 			i = int(userInput) - 1 # take one since indexing of self.stories starts at 0.
 			if self.stories[i].URL not in self.alreadyReadList:
@@ -530,6 +581,7 @@ class HackerNewsShell:
 			for i in range(0,len(prefsLine)):
 				c = prefsLine[i]
 				self.processCommand(c)
+			self.hnUserName = prefs.readline()
 			prefs.close()
 
 	def writePreferenceToFile(self, newPreference):
