@@ -391,10 +391,9 @@ class HackerNewsShell:
 		
 		karmaDetails = ""
 		if self.hnUserName != "":
-			source = self.h.getSource("http://news.ycombinator.com/user?id=" + self.hnUserName)
-			self.karma = self.h.getKarma(source)
+			#source = self.h.getSource("http://news.ycombinator.com/user?id=" + self.hnUserName)
+			#self.karma = self.h.getKarma(source)
 			karmaDetails = " | " + self.hnUserName + " (" + str(self.karma) + ")"
-			
 	
 		for i in range(0,60):
 			print ""
@@ -477,8 +476,7 @@ class HackerNewsShell:
 			
 		elif userInput == "r":
 			print "Getting latest stories from Hacker News..."
-			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
-			self.lastRefreshed = time.localtime()
+			self.refreshStories()
 			self.printStories()
 			
 		elif userInput == "t":
@@ -504,6 +502,7 @@ class HackerNewsShell:
 			
 		elif userInput[:5] == "user ":
 			self.hnUserName = userInput[5:]
+			self.refreshStories()
 			self.printStories()
 			
 		elif userInput in self.oneToThirty:
@@ -542,8 +541,13 @@ class HackerNewsShell:
 			
 	def refreshStories(self):
 		"""
-		Gets the latest stories from HN and updates the lastRefreshed time.
+		Gets the latest stories from HN, updates the lastRefreshed time and your HN karma (if you have a username)
 		"""
+		self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
+		self.lastRefreshed = time.localtime()
+		if self.hnUserName != "":
+			source = self.h.getSource("http://news.ycombinator.com/user?id=" + self.hnUserName)
+			self.karma = self.h.getKarma(source)
 
 	def showNewestStories(self):
 		"""
@@ -581,7 +585,7 @@ class HackerNewsShell:
 			for i in range(0,len(prefsLine)):
 				c = prefsLine[i]
 				self.processCommand(c)
-			self.hnUserName = prefs.readline()
+			#self.hnUserName = prefs.readline()
 			prefs.close()
 
 	def writePreferenceToFile(self, newPreference):
