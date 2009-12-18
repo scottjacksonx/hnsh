@@ -5,7 +5,7 @@
 | '_ \ | '_ \ / __|| '_ \ 
 | | | || | | |\__ \| | | |
 |_| |_||_| |_||___/|_| |_|
-hacker news shell - version 1.1.7
+hacker news shell - version 1.1.9
 
 hnsh lets you browse and read Hacker News[1] from the shell.
 
@@ -148,7 +148,7 @@ class HTMLParser:
 		"""
 		Get the comment count of a story.
 		"""
-		commentStart = source.find('item?id=') + 16
+		commentStart = source.find('item?id=') + 17
 		commentEnd = source.find('</a>', commentStart)
 		commentCount = source[commentStart:commentEnd]
 		if commentCount == "discuss":
