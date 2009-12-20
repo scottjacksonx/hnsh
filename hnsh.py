@@ -5,7 +5,7 @@
 | '_ \ | '_ \ / __|| '_ \ 
 | | | || | | |\__ \| | | |
 |_| |_||_| |_||___/|_| |_|
-hacker news shell - version 1.1.10
+hacker news shell - version 1.1.11
 
 hnsh lets you browse and read Hacker News[1] from the shell.
 
@@ -141,8 +141,9 @@ class HTMLParser:
 		Get the submitter of a story.
 		"""
 		submitterStart = source.find('user?id=')
-		submitterEnd = source.find('"', submitterStart)
-		return source[submitterStart:submitterEnd]
+		realSubmitterStart = source.find('=', submitterStart) + 1
+		submitterEnd = source.find('"', realSubmitterStart)
+		return source[realSubmitterStart:submitterEnd]
 		
 	def getCommentCount(self, source):
 		"""
