@@ -68,7 +68,7 @@ d/w -- always show domains / webpages of stories.
 	By default, a screen may look like this:
 	
 <demo>
-Showing the top stories. [last updated 21:42, Dec 14] ['h' for help.]
+Showing the top stories. [last updated 21:42, Dec 14]
 
 1  > Amazon EC2 Spot Instances - And Now How Much Would You Pay?
      (aws.typepad.com) 
@@ -97,7 +97,7 @@ Showing the top stories. [last updated 21:42, Dec 14] ['h' for help.]
 	After entering the command "w" (no quotes), that screen would like this:
 	
 <demo>
-Showing the top stories. [last updated 21:42, Dec 14] ['h' for help.]
+Showing the top stories. [last updated 21:42, Dec 14]
 
 1  > Amazon EC2 Spot Instances - And Now How Much Would You Pay?
      http://aws.typepad.com/aws/2009/12/ec2-spot-instances-and-now-how-much-would-you-pay.html
@@ -123,7 +123,7 @@ Showing the top stories. [last updated 21:42, Dec 14] ['h' for help.]
 
 </demo>
 	
-	Entering "d" (no quotes) would make tell hnsh to go back to just show domains for stories, like it did at the beginning.
+	Entering "d" (no quotes) would tell hnsh to go back to just showing domains for stories, like it did at the beginning.
 
 l/o -- always show full titles of stories / make titles fit an 80-char line.
 	hnsh was built with an 80-character-wide and 24-character-high terminal window in mind. Because of this, by default, if the title of a story won't fit onto one line of an 80-character-wide terminal window, the title is shortened and an ellipsis is placed at the end. If you use a terminal window wider than 80 characters, or just always want to see the full titles of stories, use the "l" command. To switch back to forcing long title to fit on one line, use the "o" command.
@@ -134,7 +134,7 @@ c/e -- collapse stories once you've read them / don't.
 	By default, a screen may look like this:
 	
 <demo>	
-Showing the top stories. [last updated 21:46, Dec 14] ['h' for help.]
+Showing the top stories. [last updated 21:46, Dec 14]
 
 1  > Amazon EC2 Spot Instances - And Now How Much Would You Pay?
      (aws.typepad.com) 
@@ -165,7 +165,7 @@ Showing the top stories. [last updated 21:46, Dec 14] ['h' for help.]
 <demo>
 Showing the top stories on Hacker News. [Press 'h' for help.]
 
-Showing the top stories. [last updated 21:46, Dec 14] ['h' for help.]
+Showing the top stories. [last updated 21:46, Dec 14]
 
 1  > [already read]
 
@@ -193,6 +193,10 @@ top/new -- switch between showing the top and newest stories on HN.
 
 u -- update hnsh to the latest version.
 	The "u" command downloads the latest version of hnsh from http://github.com
+
+user % -- set username to %.
+	hnsh lets you keep track of your karma. To let hnsh know which HN user you are, use the "user" command. Typing "user scottjackson", for example, would tell hnsh that I am scottjackson on HN. hnsh stores your HN username in hnsh_prefs.txt, just like all of your other hnsh preferences, so hnsh remembers who you are.
+
 --------------------------
 4. Preferences
-User preferences (the d/w, l/o and c/e commands) are stored in a file called hnsh_prefs.txt in the same directory as hnsh.py. The file consists of one line of text, and every character represents a preference. If hnsh_prefs.txt does not exist or cannot be opened for writing, then any preferences changed will only stay in effect until the program is closed.
+User preferences (the d/w, l/o and c/e commands, as well as your HN username) are stored in a file called hnsh_prefs.txt in the same directory as hnsh.py. The file consists of one line of text, and every character represents a preference (the "/" character means that everything after that slash is your HN username). If hnsh_prefs.txt does not exist or cannot be opened for writing, then any preferences changed will only stay in effect until the program is closed.

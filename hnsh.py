@@ -5,7 +5,7 @@
 | '_ \ | '_ \ / __|| '_ \ 
 | | | || | | |\__ \| | | |
 |_| |_||_| |_||___/|_| |_|
-hacker news shell - version 1.1.11
+hacker news shell - version 2.0
 
 hnsh lets you browse and read Hacker News[1] from the shell.
 
@@ -369,32 +369,9 @@ class HackerNewsShell:
 		"""
 		Prints the top line of the screen before the stories themselves.
 		"""
-		#
-		#
-		#
-		#
-		#
-		#
-		#
-		#
-		#
-		#
-		# Move the URL-getting code so that it is run every time stories are *refreshed*.
-		# 
-		#
-		#
-		#
-		#
-		#
-		#
-		#
-		#
-		#
 		
 		karmaDetails = ""
 		if self.hnUserName != "":
-			#source = self.h.getSource("http://news.ycombinator.com/user?id=" + self.hnUserName)
-			#self.karma = self.h.getKarma(source)
 			karmaDetails = " | " + self.hnUserName + " (" + str(self.karma) + ")"
 	
 		for i in range(0,60):
@@ -429,6 +406,11 @@ class HackerNewsShell:
 			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
 		
 			self.setPreferencesAtStartup()
+			
+			if self.hnUserName != "":
+				print "Getting " + self.hnUserName + "'s karma from HN..."
+				source = self.h.getSource("http://news.ycombinator.com/user?id=" + self.hnUserName)
+				self.karma = self.h.getKarma(source)
 		
 			self.printStories()
 		
@@ -503,7 +485,7 @@ class HackerNewsShell:
 			self.showTopStories()
 			
 		elif userInput[:5] == "user ":
-			self.hnUserName = userInput[5:]
+			self.setPreference("/" + userInput[5:])
 			self.refreshStories()
 			self.printStories()
 			
@@ -538,7 +520,7 @@ class HackerNewsShell:
 			
 			
 		else:
-			input = raw_input("Invalid command. For help, press h and then Return at the prompt. Press Return to continue.")
+			input = raw_input("Invalid command " + userInput + " . For help, press h and then Return at the prompt. Press Return to continue.")
 			self.printStories()
 			
 	def refreshStories(self):
@@ -548,6 +530,7 @@ class HackerNewsShell:
 		self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
 		self.lastRefreshed = time.localtime()
 		if self.hnUserName != "":
+			print "Getting " + self.hnUserName + "'s karma from HN..."
 			source = self.h.getSource("http://news.ycombinator.com/user?id=" + self.hnUserName)
 			self.karma = self.h.getKarma(source)
 
@@ -583,12 +566,16 @@ class HackerNewsShell:
 		if os.path.isfile(self.userPrefsFileName):
 			prefs = open(self.userPrefsFileName, 'r')
 			prefsLine = prefs.readline()
+			prefs.close()
 			
 			for i in range(0,len(prefsLine)):
 				c = prefsLine[i]
-				self.processCommand(c)
-			#self.hnUserName = prefs.readline()
-			prefs.close()
+				if c is not "/":
+					self.setPreference(c)
+				else:
+					self.setPreference(prefsLine[i:])
+					break
+			
 
 	def writePreferenceToFile(self, newPreference):
 		"""
@@ -609,7 +596,8 @@ class HackerNewsShell:
 			uniquePrefs = []
 			for p in prefsList:
 				if p not in uniquePrefs and p is not newPreference:	# see [1] below.
-
+					if p == "/":
+						break
 					uniquePrefs.append(p)
 					
 			# [1]
@@ -625,8 +613,12 @@ class HackerNewsShell:
 			for p in uniquePrefs:
 				prefsLine += p
 
+			username = ""
+			if self.hnUserName != "" and newPreference[0] != "/":
+				username = "/" + self.hnUserName
+
 			prefs = open(self.userPrefsFileName, 'w')
-			prefs.write(prefsLine + newPreference)
+			prefs.write(prefsLine + newPreference + username)
 			prefs.close()
 			return 1
 		return 0
@@ -651,10 +643,12 @@ class HackerNewsShell:
 			self.collapseOldStories = 1
 		elif newPreference == "e":
 			self.collapseOldStories = 0
+		elif newPreference[0] == "/":
+			self.hnUserName = newPreference[1:]
 
 		writeWentWell = self.writePreferenceToFile(newPreference)
 		if not writeWentWell:
-			input = raw_input("hnsh_prefs.txt not found. Preferences changed will only be kept until this program is closed. Press Return to continue.")
+			input = raw_input("hnsh_prefs.txt not found. Preferences changed will only be kept until this program is closed. Press Return to continue. ")
 
 
 	def showHelp(self):
@@ -675,14 +669,14 @@ class HackerNewsShell:
 		print "NB: parentheses indicate which of two options is the default."
 		print ""
 		print "Basic Commands:"
-		print "j/k -- show lower-ranked / higher-ranked stories."
+		print "j / k -- show lower-ranked / higher-ranked stories."
 		print "r -- get the latest stories from Hacker News."
 		print "q -- quit."
 		print "# -- open story number # in your web browser."
 		print "c# -- open comments for story number # in your web browser."
 		print "#+ -- open up story number # AND its comments in your web browser."
-		print "top/new -- switch between showing the top and newest stories on HN. (top)"
-		print "c/e -- collapse stories you've already read / don't collapse them. (e)"
+		print "top / new -- switch between showing the top and newest stories on HN. (top)"
+		print "c / e -- collapse stories you've already read / don't collapse them. (e)"
 		print "u -- update hnsh to the latest version."
 		print "=========================="
 		print "For more commands, see the man.txt file."
