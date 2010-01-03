@@ -5,7 +5,7 @@
 | '_ \ | '_ \ / __|| '_ \ 
 | | | || | | |\__ \| | | |
 |_| |_||_| |_||___/|_| |_|
-hacker news shell - version 2.0
+hacker news shell - version 2.0.1
 
 hnsh lets you browse and read Hacker News[1] from the shell.
 
@@ -540,8 +540,8 @@ class HackerNewsShell:
 		"""
 		if self.newestOrTop == "top":
 			self.newestOrTop = "newest"
-			print "Getting the newest stories submitted to Hacker News..."
-			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
+			print "Getting newest stories submitted to HN..."
+			self.refreshStories()
 		else:
 			input = raw_input("Already showing newest stories. Press Return to continue.")
 		self.printStories()
@@ -552,8 +552,8 @@ class HackerNewsShell:
 		"""
 		if self.newestOrTop == "newest":
 			self.newestOrTop = "top"
-			print "Getting top stories from Hacker News..."
-			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
+			print "Getting the latest stories from HN..."
+			self.refreshStories()
 		else:
 			input = raw_input("Already showing top stories. Press Return to continue.")
 		self.printStories()
