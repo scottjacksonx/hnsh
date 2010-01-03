@@ -5,7 +5,7 @@
 | '_ \ | '_ \ / __|| '_ \ 
 | | | || | | |\__ \| | | |
 |_| |_||_| |_||___/|_| |_|
-hacker news shell - version 2.0.1
+hacker news shell - version 2.1
 
 hnsh lets you browse and read Hacker News[1] from the shell.
 
@@ -439,6 +439,7 @@ class HackerNewsShell:
 			self.quit = 1
 		elif userInput == "h" or userInput == "help":
 			self.showHelp()
+			self.printStories()
 			
 		elif userInput == "j":
 			if self.firstStoryToShow == 25:
@@ -489,6 +490,10 @@ class HackerNewsShell:
 			self.refreshStories()
 			self.printStories()
 			
+		elif userInput == "prefs":
+			self.showPrefs()
+			self.printStories()
+			
 		elif userInput in self.oneToThirty:
 			i = int(userInput) - 1 # take one since indexing of self.stories starts at 0.
 			if self.stories[i].URL not in self.alreadyReadList:
@@ -520,7 +525,7 @@ class HackerNewsShell:
 			
 			
 		else:
-			input = raw_input("Invalid command " + userInput + " . For help, press h and then Return at the prompt. Press Return to continue.")
+			input = raw_input("Invalid command (" + userInput + "). For help, press h and then Return at the prompt. Press Return to continue.")
 			self.printStories()
 			
 	def refreshStories(self):
@@ -681,7 +686,49 @@ class HackerNewsShell:
 		print "=========================="
 		print "For more commands, see the man.txt file."
 		input = raw_input("Press Return to go back to the Hacker News stories.")
-		self.printStories()
+		
+		
+	def showPrefs(self):
+		"""
+		Prints out the user's preferences.
+		"""
+		for i in range(0,20):
+			print ""
+		
+		print "User Preferences"
+		print "================"
+		print ""
+		
+		if self.newestOrTop == "top":
+			print "Currently viewing top stories on HN."
+		else:
+			print "Currently viewing newest stories on HN."
+		print "--------------------------------------------------------------------------------"
+			
+		if self.hnUserName != "":
+			print "HN username = " + self.hnUserName + ". Karma = " + str(self.karma)
+			print "--------------------------------------------------------------------------------"
+			
+		if self.showDomains:
+			print "d -- show domains of stories."
+		else:
+			print "w -- show webpage URLs of stories."
+		print "--------------------------------------------------------------------------------"
+		
+		if self.showFullTitles:
+			print "l -- always show full titles of stories."
+		else:
+			print "o -- truncate titles of stories to fit an 80-character terminal window."
+		print "--------------------------------------------------------------------------------"
+		
+		if self.collapseOldStories:
+			print "c -- collapse stories after reading."
+		else:
+			print "e -- don't collapse stories after reading."
+		print "--------------------------------------------------------------------------------"
+			
+		print ""
+		input = raw_input("Press Return to go back to the Hacker News stories.")
 
 
 	def checkForUpdates(self):
