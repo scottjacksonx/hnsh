@@ -164,7 +164,10 @@ class NewsStory(HackerNewsStory):
 					print whitespace + "(" + self.domain + ")"
 				else:
 					print whitespace + self.URL
-				print whitespace + str(self.score) + " points / submitted by: " + self.submitter + " / " + str(self.commentCount) + " comments"
+				s = ""
+				if self.commentCount > 1 or self.commentCount == 0:
+					s = "s"
+				print whitespace + str(self.score) + " points / submitted by: " + self.submitter + " / " + str(self.commentCount) + " comment" + s
 						
 		else:
 			# Totally normal story. Print as normal.
@@ -177,8 +180,10 @@ class NewsStory(HackerNewsStory):
 				print whitespace + "(" + self.domain + ")"
 			else:
 				print whitespace + self.URL
-
-			print whitespace + str(self.score) + " points / submitted by: " + self.submitter + " / " + str(self.commentCount) + " comments"
+			s = ""
+			if self.commentCount > 1 or self.commentCount == 0:
+				s = "s"
+			print whitespace + str(self.score) + " points / submitted by: " + self.submitter + " / " + str(self.commentCount) + " comment" + s
 			
 		print ""
 
