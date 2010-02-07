@@ -5,7 +5,7 @@
 | '_ \ | '_ \ / __|| '_ \ 
 | | | || | | |\__ \| | | |
 |_| |_||_| |_||___/|_| |_|
-hacker news shell - version 2.1
+hacker news shell - version 2.1.1
 
 hnsh lets you browse and read Hacker News[1] from the shell.
 
@@ -40,8 +40,10 @@ from BeautifulSoup import BeautifulSoup
 import os, shutil
 import time
 
+from hnapi import *
 
-class HTMLParser:
+
+class HTMLParser(HackerNewsAPI):
 	"""
 	The class for slicing and dicing the HTML and turning it into NewsStory objects.
 	"""
@@ -74,166 +76,35 @@ class HTMLParser:
 				print("    - HN could be down..")
 				input = raw_input("Press Return to quit hnsh. When you think the problem has been solved, start it again.")
 				self.quit = 1
-		
-	def getStoryNumber(self, source):
-		"""
-		Parses HTML and returns the number of a story.
-		"""
-		numberStart = source.find('>') + 1
-		numberEnd = source.find('.')
-		return source[numberStart:numberEnd]
-		
-	def getStoryURL(self, source):
-		"""
-		Gets the URL of a story.
-		"""
-		URLStart = source.find('href="') + 6
-		URLEnd = source.find('">', URLStart)
-		url = source[URLStart:URLEnd]
-		# Check for "Ask HN" links.
-		if url[0:4] == "item": # "Ask HN" links start with "item".
-			url = "http://news.ycombinator.com/" + url
-		
-		# Change "&amp;" to "&"
-		url = url.replace("&amp;", "&")
-		
-		# Remove 'rel="nofollow' from the end of links, since they were causing some bugs.
-		if url[len(url)-13:] == "rel=\"nofollow":
-			url = url[:len(url)-13]
-			
-		# Weird hack for URLs that end in '" '. Consider removing later if it causes any problems.
-		if url[len(url)-2:] == "\" ":
-			url = url[:len(url)-2]
-		return url
-	
-	def getStoryDomain(self, source):
-		"""
-		Gets the domain of a story.
-		"""
-		domainStart = source.find('comhead">') + 10
-		domainEnd = source.find('</span>')
-		domain = source[domainStart:domainEnd]
-		# Check for "Ask HN" links.
-		if domain[0] == '=':
-			domain = "(news.ycombinator.com)"
-		return domain
-		
-	def getStoryTitle(self, source):
-		"""
-		Gets the title of a story.
-		"""
-		titleStart = source.find('>', source.find('>')+1) + 1
-		titleEnd = source.find('</a>')
-		title = source[titleStart:titleEnd]
-		title = title.lstrip()	# Strip trailing whitespace characters.
-		return title
-		
-	def getStoryScore(self, source):
-		"""
-		Get the score of a story.
-		"""
-		scoreStart = source.find('>', source.find('>')+1) + 1
-		scoreEnd = source.find('</span>')
-		return source[scoreStart:scoreEnd]
-		
-	def getSubmitter(self, source):
-		"""
-		Get the submitter of a story.
-		"""
-		submitterStart = source.find('user?id=')
-		realSubmitterStart = source.find('=', submitterStart) + 1
-		submitterEnd = source.find('"', realSubmitterStart)
-		return source[realSubmitterStart:submitterEnd]
-		
-	def getCommentCount(self, source):
-		"""
-		Get the comment count of a story.
-		"""
-		commentStart = source.find('item?id=')
-		commentCountStart = source.find('>', commentStart) + 1
-		commentEnd = source.find('</a>', commentStart)
-		commentCount = source[commentCountStart:commentEnd]
-		if commentCount == "discuss":
-			return "0 comments"
-		return commentCount
-		
-	def getCommentsURL(self, source):
-		"""
-		Get the comment URL of a story.
-		"""
-		urlStart = source.find('item?id=')
-		urlEnd = source.find('"', urlStart)
-		return "http://news.ycombinator.com/" + source[urlStart:urlEnd]
-		
-	def getKarma(self, source):
-		"""
-		Gets the karma count of a user from a page.
-		"""
-		karmaStart = source.find('<td valign=top>karma:</td><td>') + 30
-		karmaEnd = source.find('</td>', karmaStart)
-		return int(source[karmaStart:karmaEnd])
+
 		
 		
 	def getStories(self, source, alreadyReadList):
 		"""
-		Looks at source, makes stories from it, returns the stories.
+		Looks at source, makes NewsStory objects from it, returns the stories.
 		"""
 		
-		# Create the empty stories.
-		newsStories = []
-		for i in range(0,30):
-			story = NewsStory()
-			newsStories.append(story)
+		stories = HackerNewsAPI.getStories(self, source)
 		
-		soup = BeautifulSoup(source)
-		# Gives URLs, Domains and titles.
-		story_details = soup.findAll("td", {"class" : "title"}) 
-		# Gives score, submitter, comment count and comment URL.
-		story_details_2 = soup.findAll("td", {"class" : "subtext"})
-
-		# Get story numbers.
-		storyNumbers = []
-		for i in range(0,len(story_details) - 1, 2):
-			story = str(story_details[i]) # otherwise, story_details[i] is a BeautifulSoup-defined object.
-			storyNumber = self.getStoryNumber(story)
-			storyNumbers.append(storyNumber)
-			
-		storyURLs = []
-		storyDomains = []
-		storyTitles = []
-		storyScores = []
-		storySubmitters = []
-		storyCommentCounts = []
-		storyCommentURLs = []
-
-		for i in range(1, len(story_details), 2):
-			story = str(story_details[i])
-			storyURLs.append(self.getStoryURL(story))
-			storyDomains.append(self.getStoryDomain(story))
-			storyTitles.append(self.getStoryTitle(story))
-			
-		for i in range(0, len(story_details_2)):
-			story = str(story_details_2[i])
-			storyScores.append(self.getStoryScore(story))
-			storySubmitters.append(self.getSubmitter(story))
-			storyCommentCounts.append(self.getCommentCount(story))
-			storyCommentURLs.append(self.getCommentsURL(story))
-			
 		
-		# Associate the values with our newsStories.		
 		for i in range(0, 30):
-			newsStories[i].number = storyNumbers[i]
-			newsStories[i].URL = storyURLs[i]
-			newsStories[i].domain = storyDomains[i]
-			newsStories[i].title = storyTitles[i]
-			newsStories[i].score = storyScores[i]
-			newsStories[i].submitter = storySubmitters[i]
-			newsStories[i].commentCount = storyCommentCounts[i]
-			newsStories[i].commentsURL = storyCommentURLs[i]
-			if newsStories[i].URL in alreadyReadList:
-				newsStories[i].hasBeenRead = 1
+			story = stories[i]
 			
-		return newsStories
+			newStory = NewsStory()
+			newStory.id = story.id
+			newStory.number = story.number
+			newStory.title = story.title
+			newStory.domain = story.domain
+			newStory.URL = story.URL
+			newStory.score = story.score
+			newStory.submitter = story.submitter
+			newStory.commentCount = story.commentCount
+			newStory.commentsURL = story.commentsURL
+			if story.URL in alreadyReadList:
+				newStory.hasBeenRead = 1
+			stories[i] = newStory
+				
+		return stories
 		
 	def getLatestStories(self, newest, alreadyReadList):
 		"""
@@ -248,19 +119,11 @@ class HTMLParser:
 		
 		
 
-class NewsStory:
+class NewsStory(HackerNewsStory):
 	"""
 	A class representing a story on Hacker News.
 	"""
 	
-	number = ""	# What number story it is on HN.
-	title = ""	# The title of the story.
-	domain = ""	# The website the story is on.
-	URL = ""	# The URL of the story.
-	score = ""	# Current score of the story.
-	submitter = ""	# The person that submitted the story.
-	commentCount = ""	# How many comments the story has.
-	commentsURL = ""	# The HN link for commenting (and upmodding).
 	hasBeenRead = 0	# Whether or not you have read the story yet.
 	
 	def output(self, showDomain, showFullTitle, shouldCollapse):
@@ -275,7 +138,7 @@ class NewsStory:
 			- shouldCollapse: whether to collapse stories that have already
 							  been read.
 		"""
-		
+
 		# Always need to show a title.
 		title = self.title
 		if (not showFullTitle):
@@ -290,7 +153,7 @@ class NewsStory:
 			if self.hasBeenRead:
 				title = "[already read]"
 				
-			if int(self.number) < 10:
+			if self.number < 10:
 				print str(self.number) + "  > " + title
 			else:
 				print str(self.number) + " > " + title
@@ -298,26 +161,27 @@ class NewsStory:
 			if not self.hasBeenRead:
 				whitespace = "     "
 				if (showDomain):
-					print whitespace + self.domain
+					print whitespace + "(" + self.domain + ")"
 				else:
 					print whitespace + self.URL
-				print whitespace + self.score + " / submitted by: " + self.submitter + " / " + self.commentCount
+				print whitespace + str(self.score) + " points / submitted by: " + self.submitter + " / " + str(self.commentCount) + " comments"
 						
 		else:
 			# Totally normal story. Print as normal.
-			if int(self.number) < 10:
+			if self.number < 10:
 				print str(self.number) + "  > " + title
 			else:
 				print str(self.number) + " > " + title
 			whitespace = "     "
 			if (showDomain):
-				print whitespace + self.domain
+				print whitespace + "(" + self.domain + ")"
 			else:
 				print whitespace + self.URL
 
-			print whitespace + self.score + " / submitted by: " + self.submitter + " / " + self.commentCount
+			print whitespace + str(self.score) + " points / submitted by: " + self.submitter + " / " + str(self.commentCount) + " comments"
 			
 		print ""
+
 
 	
 class HackerNewsShell:
@@ -369,7 +233,6 @@ class HackerNewsShell:
 		"""
 		Prints the top line of the screen before the stories themselves.
 		"""
-		
 		karmaDetails = ""
 		if self.hnUserName != "":
 			karmaDetails = " | " + self.hnUserName + " (" + str(self.karma) + ")"
@@ -404,17 +267,18 @@ class HackerNewsShell:
 		print "Getting latest stories from Hacker News..."
 		try:
 			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
-		
+	
 			self.setPreferencesAtStartup()
-			
+		
 			if self.hnUserName != "":
 				print "Getting " + self.hnUserName + "'s karma from HN..."
-				source = self.h.getSource("http://news.ycombinator.com/user?id=" + self.hnUserName)
-				self.karma = self.h.getKarma(source)
-		
+				user = HackerNewsUser(self.hnUserName)
+				self.karma = user.karma
+	
 			self.printStories()
 		
 		except:
+			print "error"
 			self.quit = 1
 
 		self.loop()
@@ -536,8 +400,8 @@ class HackerNewsShell:
 		self.lastRefreshed = time.localtime()
 		if self.hnUserName != "":
 			print "Getting " + self.hnUserName + "'s karma from HN..."
-			source = self.h.getSource("http://news.ycombinator.com/user?id=" + self.hnUserName)
-			self.karma = self.h.getKarma(source)
+			user = HackerNewsUser(self.hnUserName)
+			self.karma = user.karma
 
 	def showNewestStories(self):
 		"""
