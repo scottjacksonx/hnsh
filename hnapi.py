@@ -52,7 +52,7 @@ class HackerNewsAPI:
 			f.close()
 			return source
 		except urllib2.URLError:
-			print "Error getting source from " + url + ". Your internet connection may have something funny going on, or you could be behind a proxy."
+			raise Exception("Error getting source from " + url + ". Your internet connection may have something funny going on, or you could be behind a proxy.")
 		
 	def getStoryNumber(self, source):
 		"""
@@ -245,7 +245,6 @@ class HackerNewsAPI:
 		source = self.getSource("http://news.ycombinator.com/best")
 		stories  = self.getStories(source)
 		return stories
-
 		
 
 class HackerNewsStory:
@@ -276,6 +275,7 @@ class HackerNewsStory:
 		print "HN ID: " + str(self.id)
 		print " "
 
+
 class HackerNewsUser:
 	"""
 	A class representing a user on Hacker News.
@@ -303,4 +303,8 @@ class HackerNewsUser:
 		source = hn.getSource(self.userPageURL)
 		karmaStart = source.find('<td valign=top>karma:</td><td>') + 30
 		karmaEnd = source.find('</td>', karmaStart)
-		self.karma = int(source[karmaStart:karmaEnd])
+		karma = source[karmaStart:karmaEnd]
+		if karma is not '':
+			self.karma = int(karma)
+		else:
+			raise Exception("Error getting karma for user " + self.name)
