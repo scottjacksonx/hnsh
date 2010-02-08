@@ -272,14 +272,13 @@ class HackerNewsShell:
 		print "Getting latest stories from Hacker News..."
 		try:
 			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
-	
 			self.setPreferencesAtStartup()
-		
+	
 			if self.hnUserName != "":
 				print "Getting " + self.hnUserName + "'s karma from HN..."
 				user = HackerNewsUser(self.hnUserName)
 				self.karma = user.karma
-	
+
 			self.printStories()
 		
 		except:
