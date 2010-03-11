@@ -213,6 +213,7 @@ class HackerNewsShell:
 	oneToThirtyPlusComments = [] # List: "1+", "2+", ..., "30+"
 	oneToThirtySubmitters = []	# List: "s1", "s2", ..., "s30"
 	lastRefreshed = time.localtime()
+	karmaChange = 0	# Whether or not the user's karma has changed since the last refresh.
 	
 	# User Preferences #
 	userPrefsFileName = "hnsh_prefs.txt"
@@ -266,6 +267,9 @@ class HackerNewsShell:
 		for i in range(self.firstStoryToShow, self.lastStoryToShow):
 			self.stories[i].output(self.showDomains, self.showFullTitles, self.collapseOldStories)
 		
+		if self.karmaChange:
+			print self.hnUserName + "'s karma has changed since the last refresh."
+		
 	
 	def __init__(self):
 		"""
@@ -279,20 +283,20 @@ class HackerNewsShell:
 			self.oneToThirtySubmitters.append("s" + str(i))
 		
 		print "Getting latest stories from Hacker News..."
-		try:
-			self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
-			self.setPreferencesAtStartup()
-	
-			if self.hnUserName != "":
-				print "Getting " + self.hnUserName + "'s karma from HN..."
-				user = HackerNewsUser(self.hnUserName)
-				self.karma = user.karma
+		#try:
+		self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
+		self.setPreferencesAtStartup()
 
-			self.printStories()
+		if self.hnUserName != "":
+			print "Getting " + self.hnUserName + "'s karma from HN..."
+			user = HackerNewsUser(self.hnUserName)
+			self.karma = user.karma
+
+		self.printStories()
 		
-		except:
-			print "error"
-			self.quit = 1
+		#except:
+		#	print "error"
+		#	self.quit = 1
 
 		self.loop()
 		
@@ -414,6 +418,8 @@ class HackerNewsShell:
 		if self.hnUserName != "":
 			print "Getting " + self.hnUserName + "'s karma from HN..."
 			user = HackerNewsUser(self.hnUserName)
+			if self.karma != user.karma and self.karma != -1000:
+				karmaChange = 1
 			self.karma = user.karma
 
 	def showNewestStories(self):
