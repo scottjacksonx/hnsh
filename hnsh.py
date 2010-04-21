@@ -5,7 +5,7 @@
 | '_ \ | '_ \ / __|| '_ \ 
 | | | || | | |\__ \| | | |
 |_| |_||_| |_||___/|_| |_|
-hacker news shell - version 2.1.1
+hacker news shell - version 2.1.2
 
 hnsh lets you browse and read Hacker News[1] from the shell.
 
@@ -87,7 +87,7 @@ class HTMLParser(HackerNewsAPI):
 		stories = HackerNewsAPI.getStories(self, source)
 		
 		
-		for i in range(0, 30):
+		for i in range(0, HackerNewsAPI.numberOfStoriesOnFrontPage):
 			story = stories[i]
 			
 			newStory = NewsStory()
@@ -126,7 +126,7 @@ class NewsStory(HackerNewsStory):
 	
 	hasBeenRead = 0	# Whether or not you have read the story yet.
 	
-	def output(self, showDomain, showFullTitle, shouldCollapse):
+	def outputStory(self, showDomain, showFullTitle, shouldCollapse):
 		"""
 		Outputs the story in a nice format.
 		
@@ -224,6 +224,76 @@ class HackerNewsShell:
 	newestOrTop = "top"	# Whether or not to show the newest or the top stories.
 	hnUserName = ""
 	karma = -1000
+	
+	def outputStory(self, story, showDomain, showFullTitle, shouldCollapse):
+		"""
+		Outputs the story in a nice format.
+		
+		Params:
+			- showDomain: whether to show the domain of the story or the URL.
+			- showFullTitle: whether to show the full title of the story make
+							 the title fit into an 80-char terminal window
+							 if necessary.
+			- shouldCollapse: whether to collapse stories that have already
+							  been read.
+		"""
+
+		# Always need to show a title.
+		title = story.title
+		if (not showFullTitle):
+			# Shorten title if longer than terminal width.
+			if len(story.title) >= 75: # 5 chars taken up by "{number} > "
+				title = story.title[:72] + "..."
+						
+		if shouldCollapse:
+			
+			# Collapse the story if it has been read.
+			
+			if story.hasBeenRead:
+				title = "[already read]"
+				
+			if story.number < 10:
+				print str(story.number) + "  > " + title
+			else:
+				print str(story.number) + " > " + title
+			
+			if not story.hasBeenRead:
+				whitespace = "     "
+				if (showDomain):
+					print whitespace + "(" + story.domain + ")"
+				else:
+					print whitespace + story.URL
+				sIfNecessary = ""
+				if story.commentCount > 1 or story.commentCount == 0:
+					sIfNecessary = "s"
+				
+				sIfNecessary2 = ""
+				if story.score > 1:
+					sIfNecessary2 = "s"	
+				
+				print whitespace + str(story.score) + " point" + sIfNecessary2 + " / submitted by: " + story.submitter + " / " + str(story.commentCount) + " comment" + sIfNecessary
+						
+		else:
+			# Totally normal story. Print as normal.
+			if story.number < 10:
+				print str(story.number) + "  > " + title
+			else:
+				print str(story.number) + " > " + title
+			whitespace = "     "
+			if (showDomain):
+				print whitespace + "(" + story.domain + ")"
+			else:
+				print whitespace + story.URL
+			sIfNecessary = ""
+			if story.commentCount > 1 or story.commentCount == 0:
+				sIfNecessary = "s"
+				
+			sIfNecessary2 = ""
+			if story.score > 1:
+				sIfNecessary2 = "s"	
+			print whitespace + str(story.score) + " point" + sIfNecessary2 + " / submitted by: " + story.submitter + " / " + str(story.commentCount) + " comment" + sIfNecessary
+			
+		print ""
 
 	
 	def getLastRefreshedTime(self):
@@ -263,9 +333,8 @@ class HackerNewsShell:
 		Outputs all of the stories to the screen.
 		"""
 		self.printHeader()
-		
 		for i in range(self.firstStoryToShow, self.lastStoryToShow):
-			self.stories[i].output(self.showDomains, self.showFullTitles, self.collapseOldStories)
+			self.outputStory(self.stories[i], self.showDomains, self.showFullTitles, self.collapseOldStories)
 		
 		if self.karmaChange:
 			print self.hnUserName + "'s karma has changed since the last refresh."
@@ -276,15 +345,16 @@ class HackerNewsShell:
 		Constructor for main class.
 		"""
 		
-		for i in range(1,31):
+		print "Getting latest stories from Hacker News..."
+		#try:
+		self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
+		
+		for i in range(1,self.h.numberOfStoriesOnFrontPage):
 			self.oneToThirty.append(str(i))
 			self.oneToThirtyComments.append("c" + str(i))
 			self.oneToThirtyPlusComments.append(str(i) + "+")
 			self.oneToThirtySubmitters.append("s" + str(i))
-		
-		print "Getting latest stories from Hacker News..."
-		#try:
-		self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
+			
 		self.setPreferencesAtStartup()
 
 		if self.hnUserName != "":
