@@ -39,6 +39,7 @@ import sys
 from BeautifulSoup import BeautifulSoup
 import os, shutil
 import time
+import instapaper
 
 from hnapi import *
 
@@ -212,6 +213,7 @@ class HackerNewsShell:
 	oneToThirtyComments = [] # List: "c1", "c2", ..., "c30".
 	oneToThirtyPlusComments = [] # List: "1+", "2+", ..., "30+"
 	oneToThirtySubmitters = []	# List: "s1", "s2", ..., "s30"
+	oneToThirtyInstapaper = [] # List: "i1", "i2", ..., "i30"
 	lastRefreshed = time.localtime()
 	karmaChange = 0	# Whether or not the user's karma has changed since the last refresh.
 	
@@ -349,11 +351,12 @@ class HackerNewsShell:
 		#try:
 		self.stories = self.h.getLatestStories(self.newestOrTop, self.alreadyReadList)
 		
-		for i in range(1,self.h.numberOfStoriesOnFrontPage):
+		for i in range(1,self.h.numberOfStoriesOnFrontPage+1):
 			self.oneToThirty.append(str(i))
 			self.oneToThirtyComments.append("c" + str(i))
 			self.oneToThirtyPlusComments.append(str(i) + "+")
 			self.oneToThirtySubmitters.append("s" + str(i))
+			self.oneToThirtyInstapaper.append("i" + str(i))
 			
 		self.setPreferencesAtStartup()
 
@@ -376,8 +379,13 @@ class HackerNewsShell:
 		Main loop. Gets user input and takes actions based on it.
 		"""
 		while (self.quit == 0):
-			userInput = raw_input("> ")
-			self.processCommand(userInput)
+			try:
+				userInput = raw_input("> ")
+				self.processCommand(userInput)
+			except EOFError:
+				sys.exit()
+			except KeyboardInterrupt:
+				sys.exit()
 
 
 	def processCommand(self, userInput):
@@ -473,6 +481,19 @@ class HackerNewsShell:
 			i = int(userInput[1:]) - 1
 			webbrowser.open_new_tab("http://news.ycombinator.com/user?id=" + self.stories[i].submitter)
 			self.printStories()
+		elif userInput in self.oneToThirtyInstapaper:
+			i = int(userInput[1:]) - 1
+			instapaperUsername = raw_input("Enter your instapaper username: ")
+			pwd = raw_input("Enter your Instapaper password (if you have one, which you probably don't): ")
+			if pwd == "":
+				instapaperAPI = instapaper.Instapaper(instapaperUsername)
+				instapaperAPI.add(self.stories[i].URL)
+			else:
+				instapaperAPI = instapaper.Instapaper(instapaperUsername, pwd)
+				instapaperAPI.add(self.stories[i].URL)
+			self.printStories()
+			
+			
 			
 			
 		else:
